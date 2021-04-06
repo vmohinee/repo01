@@ -1,0 +1,325 @@
+{
+	"name" : "rest_ipas.application",
+	"version" : "1.0",
+	"type" : "ipaas",
+	"endpoints" : [
+		{
+			"name" : "Resource",
+			"protocol" : "http",
+			"port" : "9473",
+			"spec" : {
+				"name" : "rest_ipas.application",
+				"version" : "v1"
+			},
+			"swagger" : {
+  "swagger" : "2.0",
+  "info" : {
+    "version" : "1.0",
+    "title" : "Summary about the new REST service.",
+    "description" : "Summary about the new REST service."
+  },
+  "host" : "localhost:9473",
+  "basePath" : "/",
+  "schemes" : [ "http" ],
+  "paths" : {
+    "/resource/{param}/test" : {
+      "put" : {
+        "summary" : "",
+        "description" : "",
+        "operationId" : "put-resource-test",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "body",
+          "in" : "body",
+          "description" : "",
+          "schema" : {
+            "$ref" : "#/definitions/Resource"
+          },
+          "required" : true
+        }, {
+          "name" : "param",
+          "in" : "path",
+          "description" : "",
+          "type" : "string",
+          "required" : true
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "a Resource to be returned",
+            "schema" : {
+              "$ref" : "#/definitions/Resource"
+            }
+          }
+        }
+      }
+    },
+    "/resource/test" : {
+      "post" : {
+        "summary" : "",
+        "description" : "",
+        "operationId" : "post-resource-test",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "body",
+          "in" : "body",
+          "description" : "",
+          "schema" : {
+            "$ref" : "#/definitions/Resource"
+          },
+          "required" : true
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "a Resource to be returned",
+            "schema" : {
+              "$ref" : "#/definitions/Resource"
+            }
+          }
+        }
+      },
+      "get" : {
+        "summary" : "",
+        "description" : "",
+        "operationId" : "get-resource-test",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ ],
+        "responses" : {
+          "200" : {
+            "description" : "a Resource to be returned",
+            "schema" : {
+              "$ref" : "#/definitions/Resource"
+            }
+          }
+        }
+      }
+    },
+    "/resource/test/groups" : {
+      "patch" : {
+        "summary" : "",
+        "description" : "",
+        "operationId" : "patch-resource-test-groups",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "body",
+          "in" : "body",
+          "description" : "",
+          "schema" : {
+            "$ref" : "#/definitions/Resource"
+          },
+          "required" : true
+        }, {
+          "name" : "query_id",
+          "in" : "query",
+          "description" : "",
+          "type" : "integer",
+          "format" : "int32",
+          "required" : false
+        }, {
+          "name" : "query_name",
+          "in" : "query",
+          "description" : "",
+          "type" : "string",
+          "required" : false
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "a Resource to be returned",
+            "schema" : {
+              "$ref" : "#/definitions/Resource"
+            }
+          }
+        }
+      }
+    },
+    "/resource/test/{param}" : {
+      "post" : {
+        "summary" : "",
+        "description" : "",
+        "operationId" : "post-resource-test",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "body",
+          "in" : "body",
+          "description" : "",
+          "schema" : {
+            "$ref" : "#/definitions/Resource"
+          },
+          "required" : true
+        }, {
+          "name" : "param",
+          "in" : "path",
+          "description" : "",
+          "type" : "string",
+          "required" : true
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "a Resource to be returned",
+            "schema" : {
+              "$ref" : "#/definitions/Resource"
+            }
+          }
+        }
+      },
+      "delete" : {
+        "summary" : "",
+        "description" : "",
+        "operationId" : "delete-resource-test",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "param",
+          "in" : "path",
+          "description" : "",
+          "type" : "string",
+          "required" : true
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "a string to be returned",
+            "schema" : {
+              "type" : "string"
+            }
+          }
+        }
+      }
+    },
+    "/resource/test/{param}/groups" : {
+      "get" : {
+        "summary" : "",
+        "description" : "",
+        "operationId" : "get-resource-test-groups",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "query_flag",
+          "in" : "query",
+          "description" : "",
+          "type" : "boolean",
+          "required" : false
+        }, {
+          "name" : "param",
+          "in" : "path",
+          "description" : "",
+          "type" : "string",
+          "required" : true
+        }, {
+          "name" : "query_number",
+          "in" : "query",
+          "description" : "",
+          "type" : "integer",
+          "format" : "int32",
+          "required" : false
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "a Resource to be returned",
+            "schema" : {
+              "$ref" : "#/definitions/Resource"
+            }
+          }
+        }
+      },
+      "put" : {
+        "summary" : "",
+        "description" : "",
+        "operationId" : "put-resource-test-groups",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "body",
+          "in" : "body",
+          "description" : "",
+          "schema" : {
+            "$ref" : "#/definitions/Resource"
+          },
+          "required" : true
+        }, {
+          "name" : "param",
+          "in" : "path",
+          "description" : "",
+          "type" : "string",
+          "required" : true
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "a Resource to be returned",
+            "schema" : {
+              "$ref" : "#/definitions/Resource"
+            }
+          }
+        }
+      }
+    },
+    "/resource/{param}/groups" : {
+      "post" : {
+        "summary" : "",
+        "description" : "",
+        "operationId" : "post-resource-groups",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "body",
+          "in" : "body",
+          "description" : "",
+          "schema" : {
+            "$ref" : "#/definitions/Resource"
+          },
+          "required" : true
+        }, {
+          "name" : "param",
+          "in" : "path",
+          "description" : "",
+          "type" : "string",
+          "required" : true
+        }, {
+          "name" : "query1",
+          "in" : "query",
+          "description" : "",
+          "type" : "integer",
+          "format" : "int32",
+          "required" : false
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "a Resource to be returned",
+            "schema" : {
+              "$ref" : "#/definitions/Resource"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions" : {
+    "Resource" : {
+      "type" : "object",
+      "required" : [ "name" ],
+      "properties" : {
+        "name" : {
+          "type" : "string"
+        },
+        "number" : {
+          "type" : "integer"
+        },
+        "flag" : {
+          "type" : "boolean"
+        }
+      }
+    }
+  }
+}
+		},
+		{
+			"type" : "private",
+			"pingable" : true,
+			"protocol" : "http",
+			"port" : "7777"
+		}
+	]
+}

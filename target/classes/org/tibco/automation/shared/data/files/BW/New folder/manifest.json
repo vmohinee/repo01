@@ -1,0 +1,131 @@
+{
+	"name" : "group_allDataTypes.application",
+	"version" : "1.0",
+	"type" : "ipaas",
+	"propertyPrefix" : "iPaaS_USER_OverRIDE_",
+	"properties" : [
+		{
+			"name" : "RootPWD",
+			"datatype" : "password",
+			"default" : "#!CrqcD5nJWzR+R65j/twzzAEaL04Z0taz"
+		},
+
+		{
+			"name" : "/DTGroup/PasswordMP",
+			"datatype" : "password",
+			"default" : "#!o0TmchisLU3YGMmLdx/wpnpqU+EBUS4T"
+		},
+
+		{
+			"name" : "/DTGroup/BooleanMP",
+			"datatype" : "boolean",
+			"default" : "true"
+		},
+
+		{
+			"name" : "/DTGroup/Integer",
+			"datatype" : "integer",
+			"default" : "1234"
+		},
+
+		{
+			"name" : "/DTGroup/StringMP",
+			"datatype" : "string",
+			"default" : "abcd"
+		},
+
+		{
+			"name" : "/DTGroup/LongDT",
+			"datatype" : "integer",
+			"default" : "44444444"
+		},
+
+		{
+			"name" : "/DTGroup/DecimalDT",
+			"datatype" : "integer",
+			"default" : "666"
+		},
+
+		{
+			"name" : "/DTGroup/Nestedgrp/NestedPWD",
+			"datatype" : "password",
+			"default" : "#!EPP+8pfjNkUdyXMBQVBhQgS2YoZvD7Ca"
+		}
+	],
+	"endpoints" : [
+		{
+			"name" : "Resource",
+			"protocol" : "http",
+			"port" : "8083",
+			"spec" : {
+				"name" : "group_allDataTypes.application",
+				"version" : "v1"
+			},
+			"swagger" : {
+  "swagger" : "2.0",
+  "info" : {
+    "version" : "1.0",
+    "title" : "Summary about the new REST service.",
+    "description" : "Summary about the new REST service."
+  },
+  "host" : "localhost:8083",
+  "basePath" : "/",
+  "schemes" : [ "http" ],
+  "paths" : {
+    "/resource" : {
+      "get" : {
+        "description" : "",
+        "operationId" : "get-resource",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ ],
+        "responses" : {
+          "200" : {
+            "description" : "a Resource to be returned",
+            "schema" : {
+              "$ref" : "#/definitions/Resource"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions" : {
+    "Resource" : {
+      "type" : "object",
+      "required" : [ "RootPwd", "IntegerDT", "BooleanDT", "LongDT", "PasswordDT" ],
+      "properties" : {
+        "RootPwd" : {
+          "type" : "string"
+        },
+        "IntegerDT" : {
+          "type" : "integer"
+        },
+        "BooleanDT" : {
+          "type" : "boolean"
+        },
+        "LongDT" : {
+          "type" : "string"
+        },
+        "DecimalDT" : {
+          "type" : "number"
+        },
+        "PasswordDT" : {
+          "type" : "string"
+        },
+        "NestedPwd" : {
+          "type" : "string"
+        }
+      }
+    }
+  }
+}
+		},
+		{
+			"type" : "private",
+			"pingable" : true,
+			"protocol" : "http",
+			"port" : "7777"
+		}
+	]
+}

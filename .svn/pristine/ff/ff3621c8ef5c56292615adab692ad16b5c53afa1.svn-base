@@ -1,0 +1,469 @@
+<html>
+<head>
+<title>TestNG:  TA</title>
+<link href="../testng.css" rel="stylesheet" type="text/css" />
+<link href="../my-testng.css" rel="stylesheet" type="text/css" />
+
+<style type="text/css">
+.log { display: none;} 
+.stack-trace { display: none;} 
+</style>
+<script type="text/javascript">
+<!--
+function flip(e) {
+  current = e.style.display;
+  if (current == 'block') {
+    e.style.display = 'none';
+    return 0;
+  }
+  else {
+    e.style.display = 'block';
+    return 1;
+  }
+}
+
+function toggleBox(szDivId, elem, msg1, msg2)
+{
+  var res = -1;  if (document.getElementById) {
+    res = flip(document.getElementById(szDivId));
+  }
+  else if (document.all) {
+    // this is the way old msie versions work
+    res = flip(document.all[szDivId]);
+  }
+  if(elem) {
+    if(res == 0) elem.innerHTML = msg1; else elem.innerHTML = msg2;
+  }
+
+}
+
+function toggleAllBoxes() {
+  if (document.getElementsByTagName) {
+    d = document.getElementsByTagName('div');
+    for (i = 0; i < d.length; i++) {
+      if (d[i].className == 'log') {
+        flip(d[i]);
+      }
+    }
+  }
+}
+
+// -->
+</script>
+
+</head>
+<body>
+<h2 align='center'>TA</h2><table border='1' align="center">
+<tr>
+<td>Tests passed/Failed/Skipped:</td><td>20/5/0</td>
+</tr><tr>
+<td>Started on:</td><td>Thu Apr 18 11:11:48 IST 2019</td>
+</tr>
+<tr><td>Total time:</td><td>82 seconds (82371 ms)</td>
+</tr><tr>
+<td>Included groups:</td><td></td>
+</tr><tr>
+<td>Excluded groups:</td><td></td>
+</tr>
+</table><p/>
+<small><i>(Hover the method name to see the test class name)</i></small><p/>
+<table width='100%' border='1' class='invocation-failed'>
+<tr><td colspan='4' align='center'><b>FAILED TESTS</b></td></tr>
+<tr><td><b>Test method</b></td>
+<td width="30%"><b>Exception</b></td>
+<td width="10%"><b>Time (seconds)</b></td>
+<td><b>Instance</b></td>
+</tr>
+<tr>
+<td title='org.tibco.automation.common.testcases.Tibco_Account_Tests.ta_122()'><b>ta_122</b><br>Test class: org.tibco.automation.common.testcases.Tibco_Account_Tests</td>
+<td><div><pre>java.lang.AssertionError: WEAK Cipher Suites for TLS 1.2..
+	at org.tibco.automation.common.testcases.Tibco_Account_Tests.ta_122(Tibco_Account_Tests.java:394)
+... Removed 26 stack frames</pre></div><a href='#' onClick='toggleBox("stack-trace1043639521", this, "Click to show all stack frames", "Click to hide stack frames")'>Click to show all stack frames</a>
+<div class='stack-trace' id='stack-trace1043639521'><pre>java.lang.AssertionError: WEAK Cipher Suites for TLS 1.2..
+	at org.testng.Assert.fail(Assert.java:96)
+	at org.tibco.automation.common.testcases.Tibco_Account_Tests.ta_122(Tibco_Account_Tests.java:394)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+	at java.lang.reflect.Method.invoke(Unknown Source)
+	at org.testng.internal.MethodInvocationHelper.invokeMethod(MethodInvocationHelper.java:124)
+	at org.testng.internal.Invoker.invokeMethod(Invoker.java:571)
+	at org.testng.internal.Invoker.invokeTestMethod(Invoker.java:707)
+	at org.testng.internal.Invoker.invokeTestMethods(Invoker.java:979)
+	at org.testng.internal.TestMethodWorker.invokeTestMethods(TestMethodWorker.java:125)
+	at org.testng.internal.TestMethodWorker.run(TestMethodWorker.java:109)
+	at org.testng.TestRunner.privateRun(TestRunner.java:648)
+	at org.testng.TestRunner.run(TestRunner.java:505)
+	at org.testng.SuiteRunner.runTest(SuiteRunner.java:455)
+	at org.testng.SuiteRunner.runSequentially(SuiteRunner.java:450)
+	at org.testng.SuiteRunner.privateRun(SuiteRunner.java:415)
+	at org.testng.SuiteRunner.run(SuiteRunner.java:364)
+	at org.testng.SuiteRunnerWorker.runSuite(SuiteRunnerWorker.java:52)
+	at org.testng.SuiteRunnerWorker.run(SuiteRunnerWorker.java:84)
+	at org.testng.TestNG.runSuitesSequentially(TestNG.java:1187)
+	at org.testng.TestNG.runSuitesLocally(TestNG.java:1116)
+	at org.testng.TestNG.runSuites(TestNG.java:1028)
+	at org.testng.TestNG.run(TestNG.java:996)
+	at org.testng.remote.AbstractRemoteTestNG.run(AbstractRemoteTestNG.java:114)
+	at org.testng.remote.RemoteTestNG.initAndRun(RemoteTestNG.java:251)
+	at org.testng.remote.RemoteTestNG.main(RemoteTestNG.java:77)
+</pre></div></td>
+<td>1</td>
+<td>org.tibco.automation.common.testcases.Tibco_Account_Tests@6c3708b3</td></tr>
+<tr>
+<td title='org.tibco.automation.common.testcases.Tibco_Account_Tests.ta_123()'><b>ta_123</b><br>Test class: org.tibco.automation.common.testcases.Tibco_Account_Tests</td>
+<td><div><pre>java.lang.AssertionError: WEAK Cipher Suites for TLS 1.1..
+	at org.tibco.automation.common.testcases.Tibco_Account_Tests.ta_123(Tibco_Account_Tests.java:409)
+... Removed 26 stack frames</pre></div><a href='#' onClick='toggleBox("stack-trace1195396074", this, "Click to show all stack frames", "Click to hide stack frames")'>Click to show all stack frames</a>
+<div class='stack-trace' id='stack-trace1195396074'><pre>java.lang.AssertionError: WEAK Cipher Suites for TLS 1.1..
+	at org.testng.Assert.fail(Assert.java:96)
+	at org.tibco.automation.common.testcases.Tibco_Account_Tests.ta_123(Tibco_Account_Tests.java:409)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+	at java.lang.reflect.Method.invoke(Unknown Source)
+	at org.testng.internal.MethodInvocationHelper.invokeMethod(MethodInvocationHelper.java:124)
+	at org.testng.internal.Invoker.invokeMethod(Invoker.java:571)
+	at org.testng.internal.Invoker.invokeTestMethod(Invoker.java:707)
+	at org.testng.internal.Invoker.invokeTestMethods(Invoker.java:979)
+	at org.testng.internal.TestMethodWorker.invokeTestMethods(TestMethodWorker.java:125)
+	at org.testng.internal.TestMethodWorker.run(TestMethodWorker.java:109)
+	at org.testng.TestRunner.privateRun(TestRunner.java:648)
+	at org.testng.TestRunner.run(TestRunner.java:505)
+	at org.testng.SuiteRunner.runTest(SuiteRunner.java:455)
+	at org.testng.SuiteRunner.runSequentially(SuiteRunner.java:450)
+	at org.testng.SuiteRunner.privateRun(SuiteRunner.java:415)
+	at org.testng.SuiteRunner.run(SuiteRunner.java:364)
+	at org.testng.SuiteRunnerWorker.runSuite(SuiteRunnerWorker.java:52)
+	at org.testng.SuiteRunnerWorker.run(SuiteRunnerWorker.java:84)
+	at org.testng.TestNG.runSuitesSequentially(TestNG.java:1187)
+	at org.testng.TestNG.runSuitesLocally(TestNG.java:1116)
+	at org.testng.TestNG.runSuites(TestNG.java:1028)
+	at org.testng.TestNG.run(TestNG.java:996)
+	at org.testng.remote.AbstractRemoteTestNG.run(AbstractRemoteTestNG.java:114)
+	at org.testng.remote.RemoteTestNG.initAndRun(RemoteTestNG.java:251)
+	at org.testng.remote.RemoteTestNG.main(RemoteTestNG.java:77)
+</pre></div></td>
+<td>1</td>
+<td>org.tibco.automation.common.testcases.Tibco_Account_Tests@6c3708b3</td></tr>
+<tr>
+<td title='org.tibco.automation.common.testcases.Tibco_Account_Tests.ta_14()'><b>ta_14</b><br>Test class: org.tibco.automation.common.testcases.Tibco_Account_Tests</td>
+<td><div><pre>java.lang.AssertionError: Missing HTTP headers found..Please see logs and Screenshot
+	at org.tibco.automation.common.testcases.Tibco_Account_Tests.ta_14(Tibco_Account_Tests.java:83)
+... Removed 26 stack frames</pre></div><a href='#' onClick='toggleBox("stack-trace803893384", this, "Click to show all stack frames", "Click to hide stack frames")'>Click to show all stack frames</a>
+<div class='stack-trace' id='stack-trace803893384'><pre>java.lang.AssertionError: Missing HTTP headers found..Please see logs and Screenshot
+	at org.testng.Assert.fail(Assert.java:96)
+	at org.tibco.automation.common.testcases.Tibco_Account_Tests.ta_14(Tibco_Account_Tests.java:83)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+	at java.lang.reflect.Method.invoke(Unknown Source)
+	at org.testng.internal.MethodInvocationHelper.invokeMethod(MethodInvocationHelper.java:124)
+	at org.testng.internal.Invoker.invokeMethod(Invoker.java:571)
+	at org.testng.internal.Invoker.invokeTestMethod(Invoker.java:707)
+	at org.testng.internal.Invoker.invokeTestMethods(Invoker.java:979)
+	at org.testng.internal.TestMethodWorker.invokeTestMethods(TestMethodWorker.java:125)
+	at org.testng.internal.TestMethodWorker.run(TestMethodWorker.java:109)
+	at org.testng.TestRunner.privateRun(TestRunner.java:648)
+	at org.testng.TestRunner.run(TestRunner.java:505)
+	at org.testng.SuiteRunner.runTest(SuiteRunner.java:455)
+	at org.testng.SuiteRunner.runSequentially(SuiteRunner.java:450)
+	at org.testng.SuiteRunner.privateRun(SuiteRunner.java:415)
+	at org.testng.SuiteRunner.run(SuiteRunner.java:364)
+	at org.testng.SuiteRunnerWorker.runSuite(SuiteRunnerWorker.java:52)
+	at org.testng.SuiteRunnerWorker.run(SuiteRunnerWorker.java:84)
+	at org.testng.TestNG.runSuitesSequentially(TestNG.java:1187)
+	at org.testng.TestNG.runSuitesLocally(TestNG.java:1116)
+	at org.testng.TestNG.runSuites(TestNG.java:1028)
+	at org.testng.TestNG.run(TestNG.java:996)
+	at org.testng.remote.AbstractRemoteTestNG.run(AbstractRemoteTestNG.java:114)
+	at org.testng.remote.RemoteTestNG.initAndRun(RemoteTestNG.java:251)
+	at org.testng.remote.RemoteTestNG.main(RemoteTestNG.java:77)
+</pre></div></td>
+<td>11</td>
+<td>org.tibco.automation.common.testcases.Tibco_Account_Tests@6c3708b3</td></tr>
+<tr>
+<td title='org.tibco.automation.common.testcases.Tibco_Account_Tests.ta_15()'><b>ta_15</b><br>Test class: org.tibco.automation.common.testcases.Tibco_Account_Tests<br>Parameters: https://accounts-awsqa.tibco.com/storefront/errors/</td>
+<td><div><pre>org.openqa.selenium.NoSuchElementException: no such element: Unable to locate element: {&quot;method&quot;:&quot;xpath&quot;,&quot;selector&quot;:&quot;//h1[contains(text(),&apos;Sign into TIBCO&apos;)]&quot;}
+  (Session info: chrome=73.0.3683.103)
+  (Driver info: chromedriver=2.36.540470 (e522d04694c7ebea4ba8821272dbef4f9b818c91),platform=Windows NT 10.0.15063 x86_64) (WARNING: The server did not provide any stacktrace information)
+Command duration or timeout: 0 milliseconds
+For documentation on this error, please visit: http://seleniumhq.org/exceptions/no_such_element.html
+Build info: version: &apos;3.8.1&apos;, revision: &apos;6e95a6684b&apos;, time: &apos;2017-12-01T19:05:14.666Z&apos;
+System info: host: &apos;SHHINDUJ-P51&apos;, ip: &apos;10.97.121.48&apos;, os.name: &apos;Windows 10&apos;, os.arch: &apos;amd64&apos;, os.version: &apos;10.0&apos;, java.version: &apos;1.8.0_181&apos;
+Driver info: org.openqa.selenium.chrome.ChromeDriver
+Capabilities {acceptInsecureCerts: false, acceptSslCerts: false, applicationCacheEnabled: false, browserConnectionEnabled: false, browserName: chrome, chrome: {chromedriverVersion: 2.36.540470 (e522d04694c7eb..., userDataDir: C:\Users\shhinduj\AppData\L...}, cssSelectorsEnabled: true, databaseEnabled: false, handlesAlerts: true, hasTouchScreen: false, javascriptEnabled: true, locationContextEnabled: true, mobileEmulationEnabled: false, nativeEvents: true, networkConnectionEnabled: false, pageLoadStrategy: normal, platform: XP, platformName: XP, rotatable: false, setWindowRect: true, takesHeapSnapshot: true, takesScreenshot: true, unexpectedAlertBehaviour: , unhandledPromptBehavior: , version: 73.0.3683.103, webStorageEnabled: true}
+Session ID: bdc0c292a09768b14093e8158b7005e1
+*** Element info: {Using=xpath, value=//h1[contains(text(),&apos;Sign into TIBCO&apos;)]}
+	at org.openqa.selenium.remote.ErrorHandler.createThrowable(ErrorHandler.java:214)
+	at org.openqa.selenium.remote.ErrorHandler.throwIfResponseFailed(ErrorHandler.java:166)
+	at org.openqa.selenium.remote.http.JsonHttpResponseCodec.reconstructValue(JsonHttpResponseCodec.java:40)
+	at org.openqa.selenium.remote.http.AbstractHttpResponseCodec.decode(AbstractHttpResponseCodec.java:80)
+	at org.openqa.selenium.remote.http.AbstractHttpResponseCodec.decode(AbstractHttpResponseCodec.java:44)
+	at org.openqa.selenium.remote.HttpCommandExecutor.execute(HttpCommandExecutor.java:164)
+	at org.openqa.selenium.remote.service.DriverCommandExecutor.execute(DriverCommandExecutor.java:83)
+	at org.openqa.selenium.remote.RemoteWebDriver.execute(RemoteWebDriver.java:601)
+	at org.openqa.selenium.remote.RemoteWebDriver.findElement(RemoteWebDriver.java:371)
+	at org.openqa.selenium.remote.RemoteWebDriver.findElementByXPath(RemoteWebDriver.java:473)
+	at org.openqa.selenium.By$ByXPath.findElement(By.java:361)
+	at org.openqa.selenium.remote.RemoteWebDriver.findElement(RemoteWebDriver.java:363)
+	at org.tibco.automation.common.objrepo.Tibco_Account.signInPage(Tibco_Account.java:181)
+	at org.tibco.automation.common.testlogic.Tibco_Account_Methods.url_validation(Tibco_Account_Methods.java:195)
+	at org.tibco.automation.common.testcases.Tibco_Account_Tests.ta_15(Tibco_Account_Tests.java:95)
+... Removed 29 stack frames</pre></div><a href='#' onClick='toggleBox("stack-trace1028145537", this, "Click to show all stack frames", "Click to hide stack frames")'>Click to show all stack frames</a>
+<div class='stack-trace' id='stack-trace1028145537'><pre>org.openqa.selenium.NoSuchElementException: no such element: Unable to locate element: {&quot;method&quot;:&quot;xpath&quot;,&quot;selector&quot;:&quot;//h1[contains(text(),&apos;Sign into TIBCO&apos;)]&quot;}
+  (Session info: chrome=73.0.3683.103)
+  (Driver info: chromedriver=2.36.540470 (e522d04694c7ebea4ba8821272dbef4f9b818c91),platform=Windows NT 10.0.15063 x86_64) (WARNING: The server did not provide any stacktrace information)
+Command duration or timeout: 0 milliseconds
+For documentation on this error, please visit: http://seleniumhq.org/exceptions/no_such_element.html
+Build info: version: &apos;3.8.1&apos;, revision: &apos;6e95a6684b&apos;, time: &apos;2017-12-01T19:05:14.666Z&apos;
+System info: host: &apos;SHHINDUJ-P51&apos;, ip: &apos;10.97.121.48&apos;, os.name: &apos;Windows 10&apos;, os.arch: &apos;amd64&apos;, os.version: &apos;10.0&apos;, java.version: &apos;1.8.0_181&apos;
+Driver info: org.openqa.selenium.chrome.ChromeDriver
+Capabilities {acceptInsecureCerts: false, acceptSslCerts: false, applicationCacheEnabled: false, browserConnectionEnabled: false, browserName: chrome, chrome: {chromedriverVersion: 2.36.540470 (e522d04694c7eb..., userDataDir: C:\Users\shhinduj\AppData\L...}, cssSelectorsEnabled: true, databaseEnabled: false, handlesAlerts: true, hasTouchScreen: false, javascriptEnabled: true, locationContextEnabled: true, mobileEmulationEnabled: false, nativeEvents: true, networkConnectionEnabled: false, pageLoadStrategy: normal, platform: XP, platformName: XP, rotatable: false, setWindowRect: true, takesHeapSnapshot: true, takesScreenshot: true, unexpectedAlertBehaviour: , unhandledPromptBehavior: , version: 73.0.3683.103, webStorageEnabled: true}
+Session ID: bdc0c292a09768b14093e8158b7005e1
+*** Element info: {Using=xpath, value=//h1[contains(text(),&apos;Sign into TIBCO&apos;)]}
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(Unknown Source)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(Unknown Source)
+	at java.lang.reflect.Constructor.newInstance(Unknown Source)
+	at org.openqa.selenium.remote.ErrorHandler.createThrowable(ErrorHandler.java:214)
+	at org.openqa.selenium.remote.ErrorHandler.throwIfResponseFailed(ErrorHandler.java:166)
+	at org.openqa.selenium.remote.http.JsonHttpResponseCodec.reconstructValue(JsonHttpResponseCodec.java:40)
+	at org.openqa.selenium.remote.http.AbstractHttpResponseCodec.decode(AbstractHttpResponseCodec.java:80)
+	at org.openqa.selenium.remote.http.AbstractHttpResponseCodec.decode(AbstractHttpResponseCodec.java:44)
+	at org.openqa.selenium.remote.HttpCommandExecutor.execute(HttpCommandExecutor.java:164)
+	at org.openqa.selenium.remote.service.DriverCommandExecutor.execute(DriverCommandExecutor.java:83)
+	at org.openqa.selenium.remote.RemoteWebDriver.execute(RemoteWebDriver.java:601)
+	at org.openqa.selenium.remote.RemoteWebDriver.findElement(RemoteWebDriver.java:371)
+	at org.openqa.selenium.remote.RemoteWebDriver.findElementByXPath(RemoteWebDriver.java:473)
+	at org.openqa.selenium.By$ByXPath.findElement(By.java:361)
+	at org.openqa.selenium.remote.RemoteWebDriver.findElement(RemoteWebDriver.java:363)
+	at org.tibco.automation.common.objrepo.Tibco_Account.signInPage(Tibco_Account.java:181)
+	at org.tibco.automation.common.testlogic.Tibco_Account_Methods.url_validation(Tibco_Account_Methods.java:195)
+	at org.tibco.automation.common.testcases.Tibco_Account_Tests.ta_15(Tibco_Account_Tests.java:95)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+	at java.lang.reflect.Method.invoke(Unknown Source)
+	at org.testng.internal.MethodInvocationHelper.invokeMethod(MethodInvocationHelper.java:124)
+	at org.testng.internal.Invoker.invokeMethod(Invoker.java:571)
+	at org.testng.internal.Invoker.invokeTestMethod(Invoker.java:707)
+	at org.testng.internal.Invoker.invokeTestMethods(Invoker.java:979)
+	at org.testng.internal.TestMethodWorker.invokeTestMethods(TestMethodWorker.java:125)
+	at org.testng.internal.TestMethodWorker.run(TestMethodWorker.java:109)
+	at org.testng.TestRunner.privateRun(TestRunner.java:648)
+	at org.testng.TestRunner.run(TestRunner.java:505)
+	at org.testng.SuiteRunner.runTest(SuiteRunner.java:455)
+	at org.testng.SuiteRunner.runSequentially(SuiteRunner.java:450)
+	at org.testng.SuiteRunner.privateRun(SuiteRunner.java:415)
+	at org.testng.SuiteRunner.run(SuiteRunner.java:364)
+	at org.testng.SuiteRunnerWorker.runSuite(SuiteRunnerWorker.java:52)
+	at org.testng.SuiteRunnerWorker.run(SuiteRunnerWorker.java:84)
+	at org.testng.TestNG.runSuitesSequentially(TestNG.java:1187)
+	at org.testng.TestNG.runSuitesLocally(TestNG.java:1116)
+	at org.testng.TestNG.runSuites(TestNG.java:1028)
+	at org.testng.TestNG.run(TestNG.java:996)
+	at org.testng.remote.AbstractRemoteTestNG.run(AbstractRemoteTestNG.java:114)
+	at org.testng.remote.RemoteTestNG.initAndRun(RemoteTestNG.java:251)
+	at org.testng.remote.RemoteTestNG.main(RemoteTestNG.java:77)
+</pre></div></td>
+<td>12</td>
+<td>org.tibco.automation.common.testcases.Tibco_Account_Tests@6c3708b3</td></tr>
+<tr>
+<td title='org.tibco.automation.common.testcases.Tibco_Account_Tests.ta_15()'><b>ta_15</b><br>Test class: org.tibco.automation.common.testcases.Tibco_Account_Tests<br>Parameters: https://accounts-awsqa.tibco.com/storefront/Application.xml</td>
+<td><div><pre>org.openqa.selenium.NoSuchElementException: no such element: Unable to locate element: {&quot;method&quot;:&quot;xpath&quot;,&quot;selector&quot;:&quot;//h1[contains(text(),&apos;Sign into TIBCO&apos;)]&quot;}
+  (Session info: chrome=73.0.3683.103)
+  (Driver info: chromedriver=2.36.540470 (e522d04694c7ebea4ba8821272dbef4f9b818c91),platform=Windows NT 10.0.15063 x86_64) (WARNING: The server did not provide any stacktrace information)
+Command duration or timeout: 0 milliseconds
+For documentation on this error, please visit: http://seleniumhq.org/exceptions/no_such_element.html
+Build info: version: &apos;3.8.1&apos;, revision: &apos;6e95a6684b&apos;, time: &apos;2017-12-01T19:05:14.666Z&apos;
+System info: host: &apos;SHHINDUJ-P51&apos;, ip: &apos;10.97.121.48&apos;, os.name: &apos;Windows 10&apos;, os.arch: &apos;amd64&apos;, os.version: &apos;10.0&apos;, java.version: &apos;1.8.0_181&apos;
+Driver info: org.openqa.selenium.chrome.ChromeDriver
+Capabilities {acceptInsecureCerts: false, acceptSslCerts: false, applicationCacheEnabled: false, browserConnectionEnabled: false, browserName: chrome, chrome: {chromedriverVersion: 2.36.540470 (e522d04694c7eb..., userDataDir: C:\Users\shhinduj\AppData\L...}, cssSelectorsEnabled: true, databaseEnabled: false, handlesAlerts: true, hasTouchScreen: false, javascriptEnabled: true, locationContextEnabled: true, mobileEmulationEnabled: false, nativeEvents: true, networkConnectionEnabled: false, pageLoadStrategy: normal, platform: XP, platformName: XP, rotatable: false, setWindowRect: true, takesHeapSnapshot: true, takesScreenshot: true, unexpectedAlertBehaviour: , unhandledPromptBehavior: , version: 73.0.3683.103, webStorageEnabled: true}
+Session ID: bdc0c292a09768b14093e8158b7005e1
+*** Element info: {Using=xpath, value=//h1[contains(text(),&apos;Sign into TIBCO&apos;)]}
+	at org.openqa.selenium.remote.ErrorHandler.createThrowable(ErrorHandler.java:214)
+	at org.openqa.selenium.remote.ErrorHandler.throwIfResponseFailed(ErrorHandler.java:166)
+	at org.openqa.selenium.remote.http.JsonHttpResponseCodec.reconstructValue(JsonHttpResponseCodec.java:40)
+	at org.openqa.selenium.remote.http.AbstractHttpResponseCodec.decode(AbstractHttpResponseCodec.java:80)
+	at org.openqa.selenium.remote.http.AbstractHttpResponseCodec.decode(AbstractHttpResponseCodec.java:44)
+	at org.openqa.selenium.remote.HttpCommandExecutor.execute(HttpCommandExecutor.java:164)
+	at org.openqa.selenium.remote.service.DriverCommandExecutor.execute(DriverCommandExecutor.java:83)
+	at org.openqa.selenium.remote.RemoteWebDriver.execute(RemoteWebDriver.java:601)
+	at org.openqa.selenium.remote.RemoteWebDriver.findElement(RemoteWebDriver.java:371)
+	at org.openqa.selenium.remote.RemoteWebDriver.findElementByXPath(RemoteWebDriver.java:473)
+	at org.openqa.selenium.By$ByXPath.findElement(By.java:361)
+	at org.openqa.selenium.remote.RemoteWebDriver.findElement(RemoteWebDriver.java:363)
+	at org.tibco.automation.common.objrepo.Tibco_Account.signInPage(Tibco_Account.java:181)
+	at org.tibco.automation.common.testlogic.Tibco_Account_Methods.url_validation(Tibco_Account_Methods.java:195)
+	at org.tibco.automation.common.testcases.Tibco_Account_Tests.ta_15(Tibco_Account_Tests.java:95)
+... Removed 29 stack frames</pre></div><a href='#' onClick='toggleBox("stack-trace1527882132", this, "Click to show all stack frames", "Click to hide stack frames")'>Click to show all stack frames</a>
+<div class='stack-trace' id='stack-trace1527882132'><pre>org.openqa.selenium.NoSuchElementException: no such element: Unable to locate element: {&quot;method&quot;:&quot;xpath&quot;,&quot;selector&quot;:&quot;//h1[contains(text(),&apos;Sign into TIBCO&apos;)]&quot;}
+  (Session info: chrome=73.0.3683.103)
+  (Driver info: chromedriver=2.36.540470 (e522d04694c7ebea4ba8821272dbef4f9b818c91),platform=Windows NT 10.0.15063 x86_64) (WARNING: The server did not provide any stacktrace information)
+Command duration or timeout: 0 milliseconds
+For documentation on this error, please visit: http://seleniumhq.org/exceptions/no_such_element.html
+Build info: version: &apos;3.8.1&apos;, revision: &apos;6e95a6684b&apos;, time: &apos;2017-12-01T19:05:14.666Z&apos;
+System info: host: &apos;SHHINDUJ-P51&apos;, ip: &apos;10.97.121.48&apos;, os.name: &apos;Windows 10&apos;, os.arch: &apos;amd64&apos;, os.version: &apos;10.0&apos;, java.version: &apos;1.8.0_181&apos;
+Driver info: org.openqa.selenium.chrome.ChromeDriver
+Capabilities {acceptInsecureCerts: false, acceptSslCerts: false, applicationCacheEnabled: false, browserConnectionEnabled: false, browserName: chrome, chrome: {chromedriverVersion: 2.36.540470 (e522d04694c7eb..., userDataDir: C:\Users\shhinduj\AppData\L...}, cssSelectorsEnabled: true, databaseEnabled: false, handlesAlerts: true, hasTouchScreen: false, javascriptEnabled: true, locationContextEnabled: true, mobileEmulationEnabled: false, nativeEvents: true, networkConnectionEnabled: false, pageLoadStrategy: normal, platform: XP, platformName: XP, rotatable: false, setWindowRect: true, takesHeapSnapshot: true, takesScreenshot: true, unexpectedAlertBehaviour: , unhandledPromptBehavior: , version: 73.0.3683.103, webStorageEnabled: true}
+Session ID: bdc0c292a09768b14093e8158b7005e1
+*** Element info: {Using=xpath, value=//h1[contains(text(),&apos;Sign into TIBCO&apos;)]}
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(Unknown Source)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(Unknown Source)
+	at java.lang.reflect.Constructor.newInstance(Unknown Source)
+	at org.openqa.selenium.remote.ErrorHandler.createThrowable(ErrorHandler.java:214)
+	at org.openqa.selenium.remote.ErrorHandler.throwIfResponseFailed(ErrorHandler.java:166)
+	at org.openqa.selenium.remote.http.JsonHttpResponseCodec.reconstructValue(JsonHttpResponseCodec.java:40)
+	at org.openqa.selenium.remote.http.AbstractHttpResponseCodec.decode(AbstractHttpResponseCodec.java:80)
+	at org.openqa.selenium.remote.http.AbstractHttpResponseCodec.decode(AbstractHttpResponseCodec.java:44)
+	at org.openqa.selenium.remote.HttpCommandExecutor.execute(HttpCommandExecutor.java:164)
+	at org.openqa.selenium.remote.service.DriverCommandExecutor.execute(DriverCommandExecutor.java:83)
+	at org.openqa.selenium.remote.RemoteWebDriver.execute(RemoteWebDriver.java:601)
+	at org.openqa.selenium.remote.RemoteWebDriver.findElement(RemoteWebDriver.java:371)
+	at org.openqa.selenium.remote.RemoteWebDriver.findElementByXPath(RemoteWebDriver.java:473)
+	at org.openqa.selenium.By$ByXPath.findElement(By.java:361)
+	at org.openqa.selenium.remote.RemoteWebDriver.findElement(RemoteWebDriver.java:363)
+	at org.tibco.automation.common.objrepo.Tibco_Account.signInPage(Tibco_Account.java:181)
+	at org.tibco.automation.common.testlogic.Tibco_Account_Methods.url_validation(Tibco_Account_Methods.java:195)
+	at org.tibco.automation.common.testcases.Tibco_Account_Tests.ta_15(Tibco_Account_Tests.java:95)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+	at java.lang.reflect.Method.invoke(Unknown Source)
+	at org.testng.internal.MethodInvocationHelper.invokeMethod(MethodInvocationHelper.java:124)
+	at org.testng.internal.Invoker.invokeMethod(Invoker.java:571)
+	at org.testng.internal.Invoker.invokeTestMethod(Invoker.java:707)
+	at org.testng.internal.Invoker.invokeTestMethods(Invoker.java:979)
+	at org.testng.internal.TestMethodWorker.invokeTestMethods(TestMethodWorker.java:125)
+	at org.testng.internal.TestMethodWorker.run(TestMethodWorker.java:109)
+	at org.testng.TestRunner.privateRun(TestRunner.java:648)
+	at org.testng.TestRunner.run(TestRunner.java:505)
+	at org.testng.SuiteRunner.runTest(SuiteRunner.java:455)
+	at org.testng.SuiteRunner.runSequentially(SuiteRunner.java:450)
+	at org.testng.SuiteRunner.privateRun(SuiteRunner.java:415)
+	at org.testng.SuiteRunner.run(SuiteRunner.java:364)
+	at org.testng.SuiteRunnerWorker.runSuite(SuiteRunnerWorker.java:52)
+	at org.testng.SuiteRunnerWorker.run(SuiteRunnerWorker.java:84)
+	at org.testng.TestNG.runSuitesSequentially(TestNG.java:1187)
+	at org.testng.TestNG.runSuitesLocally(TestNG.java:1116)
+	at org.testng.TestNG.runSuites(TestNG.java:1028)
+	at org.testng.TestNG.run(TestNG.java:996)
+	at org.testng.remote.AbstractRemoteTestNG.run(AbstractRemoteTestNG.java:114)
+	at org.testng.remote.RemoteTestNG.initAndRun(RemoteTestNG.java:251)
+	at org.testng.remote.RemoteTestNG.main(RemoteTestNG.java:77)
+</pre></div></td>
+<td>12</td>
+<td>org.tibco.automation.common.testcases.Tibco_Account_Tests@6c3708b3</td></tr>
+</table><p>
+<table width='100%' border='1' class='invocation-passed'>
+<tr><td colspan='4' align='center'><b>PASSED TESTS</b></td></tr>
+<tr><td><b>Test method</b></td>
+<td width="30%"><b>Exception</b></td>
+<td width="10%"><b>Time (seconds)</b></td>
+<td><b>Instance</b></td>
+</tr>
+<tr>
+<td title='org.tibco.automation.common.testcases.Tibco_Account_Tests.ta_11()'><b>ta_11</b><br>Test class: org.tibco.automation.common.testcases.Tibco_Account_Tests</td>
+<td></td>
+<td>9</td>
+<td>org.tibco.automation.common.testcases.Tibco_Account_Tests@6c3708b3</td></tr>
+<tr>
+<td title='org.tibco.automation.common.testcases.Tibco_Account_Tests.ta_110()'><b>ta_110</b><br>Test class: org.tibco.automation.common.testcases.Tibco_Account_Tests</td>
+<td></td>
+<td>0</td>
+<td>org.tibco.automation.common.testcases.Tibco_Account_Tests@6c3708b3</td></tr>
+<tr>
+<td title='org.tibco.automation.common.testcases.Tibco_Account_Tests.ta_111()'><b>ta_111</b><br>Test class: org.tibco.automation.common.testcases.Tibco_Account_Tests</td>
+<td></td>
+<td>0</td>
+<td>org.tibco.automation.common.testcases.Tibco_Account_Tests@6c3708b3</td></tr>
+<tr>
+<td title='org.tibco.automation.common.testcases.Tibco_Account_Tests.ta_112()'><b>ta_112</b><br>Test class: org.tibco.automation.common.testcases.Tibco_Account_Tests</td>
+<td></td>
+<td>0</td>
+<td>org.tibco.automation.common.testcases.Tibco_Account_Tests@6c3708b3</td></tr>
+<tr>
+<td title='org.tibco.automation.common.testcases.Tibco_Account_Tests.ta_113()'><b>ta_113</b><br>Test class: org.tibco.automation.common.testcases.Tibco_Account_Tests</td>
+<td></td>
+<td>0</td>
+<td>org.tibco.automation.common.testcases.Tibco_Account_Tests@6c3708b3</td></tr>
+<tr>
+<td title='org.tibco.automation.common.testcases.Tibco_Account_Tests.ta_114()'><b>ta_114</b><br>Test class: org.tibco.automation.common.testcases.Tibco_Account_Tests</td>
+<td></td>
+<td>0</td>
+<td>org.tibco.automation.common.testcases.Tibco_Account_Tests@6c3708b3</td></tr>
+<tr>
+<td title='org.tibco.automation.common.testcases.Tibco_Account_Tests.ta_115()'><b>ta_115</b><br>Test class: org.tibco.automation.common.testcases.Tibco_Account_Tests</td>
+<td></td>
+<td>0</td>
+<td>org.tibco.automation.common.testcases.Tibco_Account_Tests@6c3708b3</td></tr>
+<tr>
+<td title='org.tibco.automation.common.testcases.Tibco_Account_Tests.ta_116()'><b>ta_116</b><br>Test class: org.tibco.automation.common.testcases.Tibco_Account_Tests</td>
+<td></td>
+<td>0</td>
+<td>org.tibco.automation.common.testcases.Tibco_Account_Tests@6c3708b3</td></tr>
+<tr>
+<td title='org.tibco.automation.common.testcases.Tibco_Account_Tests.ta_117()'><b>ta_117</b><br>Test class: org.tibco.automation.common.testcases.Tibco_Account_Tests</td>
+<td></td>
+<td>0</td>
+<td>org.tibco.automation.common.testcases.Tibco_Account_Tests@6c3708b3</td></tr>
+<tr>
+<td title='org.tibco.automation.common.testcases.Tibco_Account_Tests.ta_118()'><b>ta_118</b><br>Test class: org.tibco.automation.common.testcases.Tibco_Account_Tests</td>
+<td></td>
+<td>0</td>
+<td>org.tibco.automation.common.testcases.Tibco_Account_Tests@6c3708b3</td></tr>
+<tr>
+<td title='org.tibco.automation.common.testcases.Tibco_Account_Tests.ta_119()'><b>ta_119</b><br>Test class: org.tibco.automation.common.testcases.Tibco_Account_Tests</td>
+<td></td>
+<td>0</td>
+<td>org.tibco.automation.common.testcases.Tibco_Account_Tests@6c3708b3</td></tr>
+<tr>
+<td title='org.tibco.automation.common.testcases.Tibco_Account_Tests.ta_120()'><b>ta_120</b><br>Test class: org.tibco.automation.common.testcases.Tibco_Account_Tests</td>
+<td></td>
+<td>0</td>
+<td>org.tibco.automation.common.testcases.Tibco_Account_Tests@6c3708b3</td></tr>
+<tr>
+<td title='org.tibco.automation.common.testcases.Tibco_Account_Tests.ta_121()'><b>ta_121</b><br>Test class: org.tibco.automation.common.testcases.Tibco_Account_Tests</td>
+<td></td>
+<td>0</td>
+<td>org.tibco.automation.common.testcases.Tibco_Account_Tests@6c3708b3</td></tr>
+<tr>
+<td title='org.tibco.automation.common.testcases.Tibco_Account_Tests.ta_13()'><b>ta_13</b><br>Test class: org.tibco.automation.common.testcases.Tibco_Account_Tests<br>Parameters: or 1=1</td>
+<td></td>
+<td>6</td>
+<td>org.tibco.automation.common.testcases.Tibco_Account_Tests@6c3708b3</td></tr>
+<tr>
+<td title='org.tibco.automation.common.testcases.Tibco_Account_Tests.ta_13()'><b>ta_13</b><br>Test class: org.tibco.automation.common.testcases.Tibco_Account_Tests<br>Parameters: or 1=1-- </td>
+<td></td>
+<td>5</td>
+<td>org.tibco.automation.common.testcases.Tibco_Account_Tests@6c3708b3</td></tr>
+<tr>
+<td title='org.tibco.automation.common.testcases.Tibco_Account_Tests.ta_13()'><b>ta_13</b><br>Test class: org.tibco.automation.common.testcases.Tibco_Account_Tests<br>Parameters: or 1=1#</td>
+<td></td>
+<td>5</td>
+<td>org.tibco.automation.common.testcases.Tibco_Account_Tests@6c3708b3</td></tr>
+<tr>
+<td title='org.tibco.automation.common.testcases.Tibco_Account_Tests.ta_16()'><b>ta_16</b><br>Test class: org.tibco.automation.common.testcases.Tibco_Account_Tests</td>
+<td></td>
+<td>6</td>
+<td>org.tibco.automation.common.testcases.Tibco_Account_Tests@6c3708b3</td></tr>
+<tr>
+<td title='org.tibco.automation.common.testcases.Tibco_Account_Tests.ta_17()'><b>ta_17</b><br>Test class: org.tibco.automation.common.testcases.Tibco_Account_Tests</td>
+<td></td>
+<td>0</td>
+<td>org.tibco.automation.common.testcases.Tibco_Account_Tests@6c3708b3</td></tr>
+<tr>
+<td title='org.tibco.automation.common.testcases.Tibco_Account_Tests.ta_18()'><b>ta_18</b><br>Test class: org.tibco.automation.common.testcases.Tibco_Account_Tests</td>
+<td></td>
+<td>0</td>
+<td>org.tibco.automation.common.testcases.Tibco_Account_Tests@6c3708b3</td></tr>
+<tr>
+<td title='org.tibco.automation.common.testcases.Tibco_Account_Tests.ta_19()'><b>ta_19</b><br>Test class: org.tibco.automation.common.testcases.Tibco_Account_Tests</td>
+<td></td>
+<td>0</td>
+<td>org.tibco.automation.common.testcases.Tibco_Account_Tests@6c3708b3</td></tr>
+</table><p>
+</body>
+</html>

@@ -1,0 +1,4 @@
+https://account.tenant-integration.tcie.pro/manage/%/home
+https://account.tenant-integration.tcie.pro/manage/%3Cscript%3Ealert(1)%3C/script%3E
+https://account.tenant-integration.tcie.pro/manage/home////////google.com
+https://account.tenant-integration.tcie.pro/manage/home@bing.com

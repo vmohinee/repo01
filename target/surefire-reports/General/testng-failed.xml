@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="Failed suite [General]" guice-stage="DEVELOPMENT" verbose="0">
+  <parameter name="appURL" value="https://account.iqa-pune.eu-west-1.tcie.pro/"/>
+  <parameter name="browserType" value="chrome"/>
+  <test thread-count="5" name="Audisafe(failed)" verbose="0">
+    <classes>
+      <class name="org.tibco.automation.tci.testcases.TCI_Auditsafe_Tests">
+        <methods>
+          <include name="setBrowser"/>
+          <include name="setTestResult"/>
+          <include name="Auditsafe_13"/>
+          <include name="endReport"/>
+          <include name="Auditsafe_14"/>
+          <include name="startReport"/>
+          <include name="exit"/>
+          <include name="Auditsafe_11"/>
+          <include name="setup"/>
+        </methods>
+      </class> <!-- org.tibco.automation.tci.testcases.TCI_Auditsafe_Tests -->
+    </classes>
+  </test> <!-- Audisafe(failed) -->
+</suite> <!-- Failed suite [General] -->

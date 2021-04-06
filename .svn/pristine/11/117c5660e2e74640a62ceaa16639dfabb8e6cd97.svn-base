@@ -1,0 +1,33 @@
+# TC 1.1 - 1.3
+invalid_uname=admin
+unregistered_uname=admin@gmail.com
+registered_uname=admin@getnada.com
+baseURL=https://account.iqa-pune.eu-west-1.tcie.pro/
+baseURL_TA=https://accounts-awsqa.tibco.com/storefront/#/login
+baseURL_Tropo=https://account.tenant-integration.tcie.pro/manage/home
+baseURL_TCI=https://us.tropos-integration.sandbox.cloud.tibco.com/applications
+
+#TCI user
+username=iqauser01sh+user2021@gmail.com
+password=integration
+
+#TCI+LiveApps User
+shared_username=iqauser01sh+user2021tcila01@gmail.com
+shared_password=integration
+
+#Spotfire User TI
+spotfire_username=iqauser01sh+tiuser2021@gmail.com
+spotfire_password=integration
+
+#Mashery user TI
+mashery_username=masherytril_Tl@getnada.com
+mashery_password=integration
+
+#Auditsafe user 
+Tas_username=trop239_auditsafe@getnada.com
+Tas_password=integration
+
+
+#TCI_Mashery
+TCI_Mashery_user=iqauser01sh+tcilauser02@gmail.com
+

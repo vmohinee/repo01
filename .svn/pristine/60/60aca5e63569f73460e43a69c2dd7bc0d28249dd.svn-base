@@ -1,0 +1,8 @@
+2021-04-06 11:29:03,099 - rootLogger - INFO - Execution of TCI_Mashery 1.1 started...
+2021-04-06 11:32:10,085 - rootLogger - ERROR - org.openqa.selenium.JavascriptException: javascript error: Failed to execute 'elementsFromPoint' on 'Document': The provided double value is non-finite.
+  (Session info: chrome=89.0.4389.114)
+Build info: version: '4.0.0-alpha-3', revision: '8c567de6dc'
+System info: host: 'MVISPUTE-T490', ip: '192.168.1.104', os.name: 'Windows 10', os.arch: 'amd64', os.version: '10.0', java.version: '14.0.2'
+Driver info: org.openqa.selenium.chrome.ChromeDriver
+Capabilities {acceptInsecureCerts: false, browserName: chrome, browserVersion: 89.0.4389.114, chrome: {chromedriverVersion: 88.0.4324.96 (68dba2d8a0b14..., userDataDir: C:\Users\mvispute\AppData\L...}, goog:chromeOptions: {debuggerAddress: localhost:53230}, javascriptEnabled: true, networkConnectionEnabled: false, pageLoadStrategy: normal, platform: WINDOWS, platformName: WINDOWS, proxy: Proxy(), setWindowRect: true, strictFileInteractability: false, timeouts: {implicit: 0, pageLoad: 300000, script: 30000}, unhandledPromptBehavior: dismiss and notify, webauthn:extension:largeBlob: true, webauthn:virtualAuthenticators: true}
+Session ID: ced294f7744ffec04ed984d8b35a5ffe

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="Failed suite [General]" guice-stage="DEVELOPMENT">
+  <parameter name="appURL" value="https://account.iqa-pune.eu-west-1.tcie.pro/"/>
+  <parameter name="browserType" value="chrome"/>
+  <test thread-count="5" name="Spotfire(failed)">
+    <classes>
+      <class name="org.tibco.automation.tsc.testcases.TSC_Spotfire_Tests">
+        <methods>
+          <include name="setBrowser"/>
+          <include name="setTestResult"/>
+          <include name="endReport"/>
+          <include name="spotfire_11"/>
+          <include name="startReport"/>
+          <include name="exit"/>
+          <include name="setup"/>
+        </methods>
+      </class> <!-- org.tibco.automation.tsc.testcases.TSC_Spotfire_Tests -->
+    </classes>
+  </test> <!-- Spotfire(failed) -->
+</suite> <!-- Failed suite [General] -->

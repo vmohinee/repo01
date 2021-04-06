@@ -1,0 +1,18 @@
+<h2>Methods run, sorted chronologically</h2><h3>&gt;&gt; means before, &lt;&lt; means after</h3><p/><br/><em>General</em><p/><small><i>(Hover the method name to see the test class name)</i></small><p/>
+<table border="1">
+<tr><th>Time</th><th>Delta (ms)</th><th>Suite<br>configuration</th><th>Test<br>configuration</th><th>Class<br>configuration</th><th>Groups<br>configuration</th><th>Method<br>configuration</th><th>Test<br>method</th><th>Thread</th><th>Instances</th></tr>
+<tr bgcolor="b577ab">  <td>21/04/06 11:28:53</td>   <td>0</td> <td title="&gt;&gt;InitBrowser.startReport()[pri:0, instance:org.tibco.automation.tci.testcases.TCI_Mashery_Tests@33ecda92]">&gt;&gt;startReport</td> 
+<td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>  <td>main@2113748097</td>   <td></td> </tr>
+<tr bgcolor="b577ab">  <td>21/04/06 11:28:53</td>   <td>199</td> <td>&nbsp;</td><td title="&gt;&gt;InitBrowser.setBrowser(java.lang.String, java.lang.String)[pri:0, instance:org.tibco.automation.tci.testcases.TCI_Mashery_Tests@33ecda92]">&gt;&gt;setBrowser</td> 
+<td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>  <td>main@2113748097</td>   <td></td> </tr>
+<tr bgcolor="c78295">  <td>21/04/06 11:29:03</td>   <td>9591</td> <td>&nbsp;</td><td>&nbsp;</td><td title="&gt;&gt;TCI_Mashery_Tests.setup()[pri:0, instance:org.tibco.automation.tci.testcases.TCI_Mashery_Tests@33ecda92]">&gt;&gt;setup</td> 
+<td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>  <td>main@2113748097</td>   <td></td> </tr>
+<tr bgcolor="c78295">  <td>21/04/06 11:29:03</td>   <td>9603</td> <td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td title="TCI_Mashery_Tests.TCI_Mashery_11()[pri:1, instance:org.tibco.automation.tci.testcases.TCI_Mashery_Tests@33ecda92]">TCI_Mashery_11</td> 
+  <td>main@2113748097</td>   <td></td> </tr>
+<tr bgcolor="b577ab">  <td>21/04/06 11:32:51</td>   <td>237616</td> <td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td title="&lt;&lt;InitBrowser.setTestResult(org.testng.ITestResult)[pri:0, instance:org.tibco.automation.tci.testcases.TCI_Mashery_Tests@33ecda92]">&lt;&lt;setTestResult</td> 
+<td>&nbsp;</td>  <td>main@2113748097</td>   <td></td> </tr>
+<tr bgcolor="b577ab">  <td>21/04/06 11:32:51</td>   <td>237624</td> <td>&nbsp;</td><td>&nbsp;</td><td title="&lt;&lt;InitBrowser.exit()[pri:0, instance:org.tibco.automation.tci.testcases.TCI_Mashery_Tests@33ecda92]">&lt;&lt;exit</td> 
+<td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>  <td>main@2113748097</td>   <td></td> </tr>
+<tr bgcolor="b577ab">  <td>21/04/06 11:32:52</td>   <td>238535</td> <td title="&lt;&lt;InitBrowser.endReport()[pri:0, instance:org.tibco.automation.tci.testcases.TCI_Mashery_Tests@33ecda92]">&lt;&lt;endReport</td> 
+<td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td>  <td>main@2113748097</td>   <td></td> </tr>
+</table>

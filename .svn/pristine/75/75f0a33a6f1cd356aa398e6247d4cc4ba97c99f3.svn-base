@@ -1,0 +1,755 @@
+{
+    "imports": [
+        "github.com/project-flogo/flow",
+        "git.tibco.com/git/product/ipaas/wi-contrib.git/contributions/General/activity/log",
+        "git.tibco.com/git/product/ipaas/wi-tcta.git/src/app/AuditSafe/activity/txcreate",
+        "git.tibco.com/git/product/ipaas/wi-tcta.git/src/app/AuditSafe/activity/query",
+        "github.com/project-flogo/contrib/activity/actreturn",
+        "git.tibco.com/git/product/ipaas/wi-contrib.git/contributions/General/trigger/rest",
+        "github.com/project-flogo/contrib/function/array",
+        "github.com/project-flogo/contrib/function/datetime",
+        "github.com/project-flogo/contrib/function/number"
+    ],
+    "name": "AuditSafeDemo",
+    "description": "",
+    "version": "1.0.0",
+    "type": "flogo:app",
+    "appModel": "1.1.1",
+    "triggers": [
+        {
+            "ref": "#rest",
+            "name": "tibco-wi-rest",
+            "description": "Simple REST Trigger",
+            "settings": {
+                "port": 9999,
+                "APISpecUpdate": false,
+                "swagger": "",
+                "secureConnection": false,
+                "serverKey": "",
+                "caCertificate": ""
+            },
+            "id": "ReceiveHTTPMessage",
+            "handlers": [
+                {
+                    "description": "A flow for Wholesale SalesOrder with respective audit events that can be pushed to AuditSafe",
+                    "settings": {
+                        "Method": "POST",
+                        "Path": "/temp",
+                        "OutputValidation": false
+                    },
+                    "action": {
+                        "ref": "github.com/project-flogo/flow",
+                        "settings": {
+                            "flowURI": "res://flow:Purchase_Order_to_Delivery_Order"
+                        },
+                        "input": {
+                            "headers": {
+                                "mapping": {
+                                    "Content-Length": "=$.headers[\"Content-Length\"]"
+                                }
+                            }
+                        },
+                        "output": {
+                            "data": {
+                                "mapping": {
+                                    "transaction_id": "=$.data.transaction_id",
+                                    "Results": "=$.data.Results",
+                                    "Data": {
+                                        "@foreach($.data.Data, Data)": {
+                                            "=": "$loop"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "reply": {
+                        "code": 200,
+                        "configureResponseCodes": false,
+                        "message": {}
+                    },
+                    "schemas": {
+                        "reply": {
+                            "data": {
+                                "type": "json",
+                                "value": "{\"$schema\":\"http://json-schema.org/draft-04/schema#\",\"type\":\"object\",\"properties\":{\"transaction_id\":{\"type\":\"string\"},\"Results\":{\"type\":\"string\"},\"Data\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{}}}}}",
+                                "fe_metadata": "{\n    \"transaction_id\":\"string\",\n    \"Results\":\"string\",\n    \"Data\":[{}]\n}"
+                            },
+                            "responseBody": {
+                                "type": "json",
+                                "value": "{\"type\":\"object\",\"properties\":{\"body\":{\"type\":\"any\"},\"headers\":{\"type\":\"object\"}}}",
+                                "fe_metadata": "{\"type\":\"object\",\"properties\":{\"body\":{\"type\":\"any\"},\"headers\":{\"type\":\"object\"}}}"
+                            }
+                        },
+                        "output": {
+                            "headers": {
+                                "type": "json",
+                                "value": "{\"type\":\"object\",\"properties\":{\"Accept\":{\"type\":\"string\",\"visible\":false},\"Accept-Charset\":{\"type\":\"string\",\"visible\":false},\"Accept-Encoding\":{\"type\":\"string\",\"visible\":false},\"Content-Type\":{\"type\":\"string\",\"visible\":false},\"Content-Length\":{\"type\":\"string\",\"visible\":false},\"Connection\":{\"type\":\"string\",\"visible\":false},\"Cookie\":{\"type\":\"string\",\"visible\":false},\"Pragma\":{\"type\":\"string\",\"visible\":false}},\"required\":[]}",
+                                "fe_metadata": "[{\"parameterName\":\"Accept\",\"type\":\"string\",\"repeating\":\"false\",\"required\":\"false\",\"visible\":false},{\"parameterName\":\"Accept-Charset\",\"type\":\"string\",\"repeating\":\"false\",\"required\":\"false\",\"visible\":false},{\"parameterName\":\"Accept-Encoding\",\"type\":\"string\",\"repeating\":\"false\",\"required\":\"false\",\"visible\":false},{\"parameterName\":\"Content-Type\",\"type\":\"string\",\"repeating\":\"false\",\"required\":\"false\",\"visible\":false},{\"parameterName\":\"Content-Length\",\"type\":\"string\",\"repeating\":\"false\",\"required\":\"false\",\"visible\":false},{\"parameterName\":\"Connection\",\"type\":\"string\",\"repeating\":\"false\",\"required\":\"false\",\"visible\":false},{\"parameterName\":\"Cookie\",\"type\":\"string\",\"repeating\":\"false\",\"required\":\"false\",\"visible\":false},{\"parameterName\":\"Pragma\",\"type\":\"string\",\"repeating\":\"false\",\"required\":\"false\",\"visible\":false}]"
+                            }
+                        }
+                    },
+                    "name": "Purchase_Order_to_Delivery_Order"
+                }
+            ]
+        }
+    ],
+    "resources": [
+        {
+            "id": "flow:Purchase_Order_to_Delivery_Order",
+            "data": {
+                "name": "Purchase Order to Delivery Order",
+                "description": "A flow for Wholesale SalesOrder with respective audit events that can be pushed to AuditSafe",
+                "links": [
+                    {
+                        "id": 1,
+                        "from": "B2BWholesalePO",
+                        "to": "ReceivedB2BOrderAuditEvent",
+                        "type": "default"
+                    },
+                    {
+                        "id": 2,
+                        "from": "ReceivedB2BOrderAuditEvent",
+                        "to": "OrderManagementSystem",
+                        "type": "default"
+                    },
+                    {
+                        "id": 3,
+                        "from": "OrderManagementSystem",
+                        "to": "OrderCreationAuditEvent",
+                        "type": "default"
+                    },
+                    {
+                        "id": 4,
+                        "from": "OrderCreationAuditEvent",
+                        "to": "InventoryCheck",
+                        "type": "default"
+                    },
+                    {
+                        "id": 5,
+                        "from": "InventoryCheck",
+                        "to": "InventoryCheckAuditEvent",
+                        "type": "default"
+                    },
+                    {
+                        "id": 6,
+                        "from": "InventoryCheckAuditEvent",
+                        "to": "WMS",
+                        "type": "default"
+                    },
+                    {
+                        "id": 7,
+                        "from": "WMS",
+                        "to": "DO1CreationAuditEvent",
+                        "type": "default"
+                    },
+                    {
+                        "id": 8,
+                        "from": "DO1CreationAuditEvent",
+                        "to": "Shipment1CreationAuditEvent",
+                        "type": "default"
+                    },
+                    {
+                        "id": 9,
+                        "from": "Shipment1CreationAuditEvent",
+                        "to": "Delivery1AuditEvent",
+                        "type": "default"
+                    },
+                    {
+                        "id": 10,
+                        "from": "Delivery1AuditEvent",
+                        "to": "GetAuditEvent",
+                        "type": "default"
+                    },
+                    {
+                        "id": 11,
+                        "from": "GetAuditEvent",
+                        "to": "Return",
+                        "type": "default"
+                    },
+                    {
+                        "id": 12,
+                        "from": "WMS",
+                        "to": "DOCreationAuditEvent",
+                        "type": "label",
+                        "label": "WMS to PostAuditEvent"
+                    },
+                    {
+                        "id": 13,
+                        "from": "DOCreationAuditEvent",
+                        "to": "ShipmentCreationAuditEvent",
+                        "type": "default"
+                    },
+                    {
+                        "id": 14,
+                        "from": "ShipmentCreationAuditEvent",
+                        "to": "DeliveryAuditEvent",
+                        "type": "default"
+                    }
+                ],
+                "tasks": [
+                    {
+                        "id": "B2BWholesalePO",
+                        "name": "B2BWholesalePO",
+                        "description": "Simple Log Message Activity",
+                        "activity": {
+                            "ref": "#log",
+                            "input": {
+                                "Log Level": "INFO",
+                                "flowInfo": false
+                            }
+                        }
+                    },
+                    {
+                        "id": "ReceivedB2BOrderAuditEvent",
+                        "name": "ReceivedB2BOrderAuditEvent",
+                        "description": "Use this activity to post an audit event to TIBCO Cloud(TM) AuditSafe",
+                        "activity": {
+                            "ref": "#txcreate",
+                            "input": {
+                                "input": {
+                                    "mapping": {
+                                        "biz_proc": "Wholesale Order",
+                                        "audit_event": "PO RECEIPT",
+                                        "event_desc": "Wholesale purchase order received from customer for 2 Items",
+                                        "event_id": "1",
+                                        "event_timestamp": "=datetime.currentDatetime()",
+                                        "event_status": "CREATED",
+                                        "event_source": "B2B",
+                                        "event_destination": "Order Management System",
+                                        "extra_props": [
+                                            {
+                                                "prop_name": "PO Number",
+                                                "prop_value": "S007346789"
+                                            }
+                                        ],
+                                        "payload": "ISA~00~          ~00~          ~01~123456789      ~01~987654321      ~100616~1240~*~00403~000000004~0~P~+'GS~PO~Application Sen~Application Rec~20100616~1240~4~X~005010'ST~850~0001~IMPLEMENTATION CONVENTION REFERENCE'BEG~00~BK~99AKDF9DAL393~39483920193843~20080328~AN3920943~AC~IBM~02~AE~02~BA'CUR~AC~USA~.2939~SE~USA~IMF~002~20080328~1615~021~20080328~0718~038~20080328~1952~002~20080328~1615~021~20080328~0718'REF~AB~3920394930203~GENERAL PURPOSE~BT+12345678900987654321768958473+CM+500+AB+3920394930203'PER~AC~ARTHUR JONES~TE~(614)555-1212~TE~(614)555-1212~TE~(614)555-1212~ADDL CONTACT DESC'TAX~229438383~IP~02535~IP~36201~IP~36299~IP~02535~IP~36201~A~C'FOB~CA~IP~GENERAL PURPOSE~01~CFR~IP~GENERAL PURPOSE~BY~GENERAL PURPOSE'CTP~AG~ALT~100.00~100~DP+1387084417+10.938+HB+1191135548+.29384+QD+151375184+.05029+DP+172447798+10.938+HB+1318029790+.29384~CSD~.05029~100.00~PD~MILES~10'PAM~01~.500~QD+296871275+10.938+DP+2039114794+.29384+HB+173280309+.05029+QD+882799693+10.938+DP+778001999+.29384~AC~50.00~DA~038~20080328~1952~002~20080328~1615~1~10.25~N'CSH~B~A~10000~ACCT0001~20080328~AX~DL~B0~20.00~1'TC2~A~SBEANS'SAC~A~A010~AA~1~50000~1~.25~5000~HB~123.45~100~01~12345678900987654321768958473~PROMO292910~GENERAL PURPOSE~ENG'CUR~BK~USA~1.259~AC~USA~LNF~021~20080328~0718~038~20080328~1952~002~20080328~1615~021~20080328~0718~038~20080328~1952'ITD~01~1~.0035~20080328~60~20080328~10~1000~20080328~10000~.25~GENERAL PURPOSE~1~C~50.75'DIS~AMT~CA~10~DOF~1000~4200'INC~03~QD+618315015+.05029+DP+10220888+10.938+HB+694605289+.29384+QD+287125759+.05029+DP+74889888+10.938~.500~123.45~665.75~FL'DTM~002~20080328~1615~CT~CM~DATE TIME PERIOD'LIN~AAA849~AB~ASSEMBLY~BL~BRAND OR LABEL~ON~CUST12345~AB~ASSEMBLY~BL~BRAND OR LABEL~ON~CUST12345~AB~ASSEMBLY~BL~BRAND OR LABEL~ON~CUST12345~AB~ASSEMBLY~BL~BRAND OR LABEL~ON~CUST12345~AB~ASSEMBLY~BL~BRAND OR LABEL~ON~CUST12345'SI~NR~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY'PID~F~BC~AX~UNSCENTED~GENERAL PURPOSE~BS~SUBQUALIFIER~N~ENG'MEA~AA~A~~HB+1110130411+.29384+QD+227207086+.05029+DP+445812951+10.938+HB+1312172256+.29384+QD+190582094+.05029~11.00~200~01~01~OS~BM'PWK~AA~AE~1~SE~0~9012345918341~GENERAL PURPOSE~1+2+1+2+1~AR'PKG~F~10~AA~MARKED~GENERAL PURPOSE~01'TD1~BAG07~1234567~B~SBEANS~ONE OUNCE WIDGETS~A~12345678~DP~40~HB'TD5~A~0~111222333~A~ROUTING INFORMATION~AB~IP~36299~BS~AA~4230~AC~NM~ON~US'TD3~CR~AAAA~EQ48495~T~50~QD~N~01~30394938483234'TD4~BW~4~AC~GENERAL PURPOSE~N'MAN~GM~III789384839~MKD29393812910~L~3939348930IDKDLSIA~III789384839'PCT~1~10.25'CTB~AA~GENERAL PURPOSE~28~100~NP~100000~DP+145887121+10.938+HB+883971449+.29384+QD+378773390+.05029+DP+471729892+10.938+HB+1212584149+.29384'TXI~ST~100.00~20.00~CD~TAX JRSDCT~1~A~100.00~33939483921~888394'LDT~AA~.500~HR~20080328'QTY~43~123.45~QD+1750213682+.05029+DP+1814061862+10.938+HB+218032469+.29384+QD+2063779234+.05029+DP+975972386+10.938'MTX~ALL~TEXTUAL DATA~TEXTUAL DATA~DS~682048358~ENG'REF~BT~500~GENERAL PURPOSE~CM+3920394930203+AB+12345678900987654321768958473+BT+500'AMT~AC~50.00~C'REF~CM~3920394930203~GENERAL PURPOSE~AB+12345678900987654321768958473+BT+500+CM+3920394930203'DTM~021~20080328~0718~MT~MM~DATE TIME PERIOD'PCT~1~50.75'FA1~NR~A020~C'FA2~01~FINANCIAL INFORMATION CODE'N9~AB~12345678900987654321768958473~FREE FORM DESCRIPTION~20080328~1952~PT~BT+500+CM+3920394930203+AB+12345678900987654321768958473'DTM~038~20080328~1615~CT~YM~DATE TIME PERIOD'MTX~DOD~TEXTUAL DATA~TEXTUAL DATA~LC~293213191~ENG'PWK~BL~BM~2~BK~0~43202~GENERAL PURPOSE~2+1+2+1+2~AR'EFI~03~FREE FORM MESSAGE TEXT~9E~VERSION IDENTIFIER~PROGRAM IDENTIFIER~VERSION IDENTIFIER~INTERCHANGE FORMAT~VERSION IDENTIFIER~COMPRESSION TECHNIQUE~AV~FILE NAME~FIX~322119932~21~VERSION IDENTIFIER~ASB'N1~AC~MAGGIE MCGILLICUTTY~0~9012345918341~11~SE'N2~BEVERLY SIMPSON~ARTHUR JONES'IN2~02~MAGGIE MCGILLICUTTY~BEVERLY SIMPSON'N3~PO BOX 123~157 WEST 57TH STREET'N4~CINCINNATI~OH~43017~US~IP~02535'NX2~01~103 NORTH MAIN STREET~95391~02~PO BOX 123'REF~BT~500~GENERAL PURPOSE~CM+3920394930203+AB+12345678900987654321768958473+BT+500'PER~CR~ARTHUR JONES~TE~(614)555-1212~TE~(614)555-1212~TE~(614)555-1212~ADDL CONTACT DESC'SI~AX~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY~SRV~BRAND OR LABEL'FOB~PA~IP~GENERAL PURPOSE~02~CFR~IP~GENERAL PURPOSE~FE~GENERAL PURPOSE'TD1~BBL94~50~C~SBEANS~FIFTEEN POUND WIDGETS~B~40~HB~400~QD'TD5~B~0~111222333~U~ROUTING INFORMATION~CO~IP~36201~SB~HO~7450~AC~NM~ON~US'TD3~HV~AKEI~EQ12349~A~12345678~DP~R~03~394899111098456'TD4~SM~A~PS~GENERAL PURPOSE~N'PKG~F~37~AA~MARKED~GENERAL PURPOSE~03'LM~NR~SUBQUALIFIER'LQ~0~INDUSTRY CODE'SPI~09~CM~3920394930203~TITLE OF THE DATA ENTITY~ENTITY PURPOSE~A~10~DR~02~AX~SUBQUALIFIER~293212~I~AA~0001'REF~AB~12345678900987654321768958473~GENERAL PURPOSE~BT+500+CM+3920394930203+AB+12345678900987654321768958473'DTM~002~20080328~0718~MT~CM~DATE TIME PERIOD'MTX~GEN~TEXTUAL DATA~TEXTUAL DATA~NP~558215129~ENG'N1~BK~MAGGIE MCGILLICUTTY~0~43202~13~AC'N2~BEVERLY SIMPSON~ARTHUR JONES'N3~157 WEST 57TH STREET~103 NORTH MAIN STREET'N4~COLUMBUS~OH~43017~US~IP~36299'REF~BT~500~GENERAL PURPOSE~CM+3920394930203+AB+12345678900987654321768958473+BT+500'G61~EX~MAGGIE MCGILLICUTTY~TE~(614)555-1212~ADDL CONTACT DESC'MTX~ALL~TEXTUAL DATA~TEXTUAL DATA~DS~622531297~ENG'CB1~07~A'REF~CM~3920394930203~GENERAL PURPOSE~AB+12345678900987654321768958473+BT+500+CM+3920394930203'DTM~021~20080328~1952~PT~MM~DATE TIME PERIOD'LDT~AF~100~WK~20080328'MTX~DOD~TEXTUAL DATA~TEXTUAL DATA~LC~522321826~ENG'ADV~AA~SRV~100.00~150.25~CT9392~SRV~119291.223'DTM~038~20080328~1615~CT~YM~DATE TIME PERIOD'MTX~GEN~TEXTUAL DATA~TEXTUAL DATA~NP~373486709~ENG'PO1~3ALDKF~.500~HB~123.90~LE~AB~CUST12345~BL~ASSEMBLY~ON~BRAND OR LABEL~AB~CUST12345~BL~ASSEMBLY~ON~BRAND OR LABEL~AB~CUST12345~BL~ASSEMBLY~ON~BRAND OR LABEL~AB~CUST12345'LIN~AAA849~BL~ASSEMBLY~ON~BRAND OR LABEL~AB~CUST12345~BL~ASSEMBLY~ON~BRAND OR LABEL~AB~CUST12345~BL~ASSEMBLY~ON~BRAND OR LABEL~AB~CUST12345~BL~ASSEMBLY~ON~BRAND OR LABEL~AB~CUST12345~BL~ASSEMBLY~ON~BRAND OR LABEL~AB~CUST12345'SI~NR~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY'CUR~SE~USA~4.5948~BK~USA~NYC~002~20080328~0718~021~20080328~1952~038~20080328~1615~002~20080328~0718~021~20080328~1952'CN1~04~665.75~.10~12345678900987654321768958473~.25~VERSION IDENTIFIER'PO3~AQ~20080328~MNR~5400.50~RD~123.45~QD~GENERAL PURPOSE'CTP~BR~SLP~100.00~100~DP+1218379213+.29384+HB+1978525058+.05029+QD+2034754308+10.938+DP+231310647+.29384+HB+356545966+.05029~CSR~10.938~100.00~PD~MILES~13'CUR~AC~USA~.2939~SE~USA~IMF~038~20080328~1615~002~20080328~0718~021~20080328~1952~038~20080328~1615~002~20080328~0718'PAM~01~.500~QD+188914096+.29384+DP+1096408465+.05029+HB+107532689+10.938+QD+1963565109+.29384+DP+805733801+.05029~FL~50.00~DA~021~20080328~1952~038~20080328~1615~1~10.25~N'MEA~CO~BE~~HB+1136558184+10.938+QD+992791078+.29384+DP+549292766+.05029+HB+1775671454+10.938+QD+434064727+.29384~50~201.20~03~03~TP~BM'PID~F~10~AX~UNSCENTED~GENERAL PURPOSE~BS~SUBQUALIFIER~N~ENG'MEA~BA~CA~~DP+1991332373+.05029+HB+275506954+10.938+QD+2010887905+.29384+DP+647294122+.05029+HB+2035001580+10.938~11.00~200~07~06~OS~BM'PWK~AA~SN~3~BK~0~9012345918341~GENERAL PURPOSE~1+2+1+2+1~AR'PO4~24~12~QD~PLT37~T~100~DP~100~HB~45~50~123456~QD~21~TP~888394~3ALDKF~826061849'REF~AB~500~GENERAL PURPOSE~BT+3920394930203+CM+12345678900987654321768958473+AB+500'PER~AC~BEVERLY SIMPSON~TE~(614)555-1212~TE~(614)555-1212~TE~(614)555-1212~ADDL CONTACT DESC'SAC~N~A030~AA~ABC60~10000~3~.15~450000~DP~123.45~100~01~3920394930203~PR939201~GENERAL PURPOSE~ENG'CUR~AC~USA~1.259~SE~USA~LNF~002~20080328~0718~021~20080328~1952~038~20080328~1615~002~20080328~0718~021~20080328~1952'CTP~GV~ALT~123.90~.500~HB+950778452+.29384+QD+306018330+.05029+DP+1476388202+10.938+HB+523044528+.29384+QD+504872872+.05029~ILP~10.938~665.75~LE~MILES~14'IT8~F~D~50000~182389281~20080328~NR~B2~BL~BRAND OR LABEL~ON~CUST12345~AB~ASSEMBLY~BL~BRAND OR LABEL~ON~CUST12345~AB~ASSEMBLY~BL~BRAND OR LABEL~ON~CUST12345~AB~ASSEMBLY~BL~BRAND OR LABEL'CSH~W~E~100000~20934801~20080328~AX~D1~X~20.00~1'ITD~12~8~.0010~20080328~90~20080328~30~10000~20080328~50000~.10~GENERAL PURPOSE~15~E~50.75'DIS~CSH~PC~.0434~DAT~50~1000'INC~01~DP+1420683793+.29384+HB+528939340+.05029+QD+259864053+10.938+DP+1522481224+.29384+HB+1646796291+.05029~123.45~100~100.00~NP'TAX~222948392034~IP~02535~IP~36201~IP~36299~IP~02535~IP~36201~2~C'FOB~PB~IP~GENERAL PURPOSE~ZZ~CFR~IP~GENERAL PURPOSE~PP~GENERAL PURPOSE'SDQ~QD~0~111222333~.500~43202~123.45~9012345918341~100~111222333~.500~43202~123.45~9012345918341~100~111222333~.500~43202~123.45~9012345918341~100~111222333~.500~36299'IT3~100~DP~IC~100~GU'DTM~038~20080328~1615~MT~CM~DATE TIME PERIOD'TC2~A~SBEANS'TD1~BAG07~100~B~SBEANS~CUBIC YARD WIDGETS IN VARIOUS~B~50~HB~4000~QD'TD5~I~0~43202~M~ROUTING INFORMATION~AB~IP~02535~SS~WD~9500~AC~NM~ON~US'TD3~LO~IIBL~EQ8373A~A~40~DP~S~04~39483920294'TD4~TSC~U~SN~GENERAL PURPOSE~N'PCT~1~10.25'MAN~SM~MKD29393812910~3939348930IDKDLSIA~GM~III789384839~MKD29393812910'MTX~ALL~TEXTUAL DATA~TEXTUAL DATA~DS~768822358~ENG'SPI~03~BT~12345678900987654321768958473~TITLE OF THE DATA ENTITY~ENTITY PURPOSE~D~12~BL~09~AA~SUBQUALIFIER~100~R~AA~0002'TXI~FT~50.00~20.00~VE~TAX JRSDCT~A~D~450.00~229438383~AAA849'CTB~AA~GENERAL PURPOSE~28~123.45~AC~10000~HB+998406540+10.938+QD+431255710+.29384+DP+441289551+.05029+HB+466532527+10.938+QD+1400482816+.29384'QTY~43~100~DP+2036741237+.05029+HB+1106082774+10.938+QD+4243644+.29384+DP+718140745+.05029+HB+1352697150+10.938'SI~NR~SRV~CUST12345~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345'SCH~.500~QD~BK~ARTHUR JONES~002~20080328~0718~021~20080328~1952~39349382~888394'TD1~BBL94~1234567~C~SBEANS~ONE OUNCE WIDGETS~T~12345678~DP~40~HB'TD5~A~0~9012345918341~A~ROUTING INFORMATION~CO~IP~36201~BS~AA~4230~AC~NM~ON~US'TD3~CR~AAAA~EQ48495~B~50~QD~N~01~30394938483234'TD4~BW~4~AC~GENERAL PURPOSE~N'REF~CM~500~GENERAL PURPOSE~AB+3920394930203+BT+12345678900987654321768958473+CM+500'PKG~F~63~AX~MARKED~GENERAL PURPOSE~05'MEA~AA~A~~DP+671727256+.29384+HB+1271061439+.05029+QD+66417669+10.938+DP+1724927565+.29384+HB+2013578969+.05029~100.00~150.25~01~01~BS~BM'LS~LDT'LDT~AS~123.45~HR~20080328'QTY~01~100~QD+336055940+10.938+DP+266521831+.29384+HB+1035198385+.05029+QD+834701171+10.938+DP+1978710267+.29384'MTX~DOD~TEXTUAL DATA~TEXTUAL DATA~LC~923927488~ENG'REF~AB~3920394930203~GENERAL PURPOSE~BT+12345678900987654321768958473+CM+500+AB+3920394930203'LM~AA~SUBQUALIFIER'LQ~0~INDUSTRY CODE'LE~LDT'N9~BT~12345678900987654321768958473~FREE FORM DESCRIPTION~20080328~1615~PT~CM+500+AB+3920394930203+BT+12345678900987654321768958473'DTM~038~20080328~0718~CT~MM~DATE TIME PERIOD'MEA~CO~BE~500~HB+231671036+.05029+QD+956461241+10.938+DP+53150194+.29384+HB+1238291834+.05029+QD+1245585474+10.938~50~201.20~03~~OS~BM'MTX~GEN~TEXTUAL DATA~TEXTUAL DATA~NP~915706971~ENG'PWK~DR~AE~1~AC~0~111222333~GENERAL PURPOSE~2+1+2+1+2~AR'EFI~02~FREE FORM MESSAGE TEXT~9N~VERSION IDENTIFIER~PROGRAM IDENTIFIER~VERSION IDENTIFIER~INTERCHANGE FORMAT~VERSION IDENTIFIER~COMPRESSION TECHNIQUE~CH~FILE NAME~VAR~22194922111~56~VERSION IDENTIFIER~ASB'N1~SE~MAGGIE MCGILLICUTTY~0~43202~19~BK'N2~BEVERLY SIMPSON~ARTHUR JONES'IN2~05~MAGGIE MCGILLICUTTY~BEVERLY SIMPSON'N3~PO BOX 123~157 WEST 57TH STREET'N4~CLEVELAND~OH~43017~US~IP~36299'QTY~28~.500~DP+1359656823+.29384+HB+1805955795+.05029+QD+462445330+10.938+DP+832324677+.29384+HB+1188372343+.05029'NX2~07~103 NORTH MAIN STREET~23442~01~PO BOX 123'REF~CM~500~GENERAL PURPOSE~AB+3920394930203+BT+12345678900987654321768958473+CM+500'PER~CR~ARTHUR JONES~TE~(614)555-1212~TE~(614)555-1212~TE~(614)555-1212~ADDL CONTACT DESC'SI~NR~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY'DTM~002~20080328~1952~MT~YM~DATE TIME PERIOD'FOB~CA~IP~GENERAL PURPOSE~01~CFR~IP~GENERAL PURPOSE~BY~GENERAL PURPOSE'SCH~123.45~QD~AC~MAGGIE MCGILLICUTTY~021~20080328~1615~038~20080328~0718~3948329~3ALDKF'TD1~PLT37~50~A~SBEANS~FIFTEEN POUND WIDGETS~A~40~DP~400~HB'TD5~B~0~9012345918341~U~ROUTING INFORMATION~IC~IP~02535~SB~HO~7450~AC~NM~ON~US'TD3~HV~AKEI~EQ12349~T~12345678~QD~R~03~394899111098456'TD4~SM~A~PS~GENERAL PURPOSE~N'PKG~F~10~AX~MARKED~GENERAL PURPOSE~01'LDT~AA~100~WK~20080328'MAN~L~3939348930IDKDLSIA~III789384839~SM~MKD29393812910~3939348930IDKDLSIA'QTY~43~.500~DP+897761445+10.938+HB+1023630009+.29384+QD+406805422+.05029+DP+784739074+10.938+HB+57141831+.29384'MTX~ALL~TEXTUAL DATA~TEXTUAL DATA~DS~12361472~ENG'REF~AB~3920394930203~GENERAL PURPOSE~BT+12345678900987654321768958473+CM+500+AB+3920394930203'SLN~AAA849~888394~I~123.45~QD+1695743539+.05029+DP+986341539+10.938+HB+369198664+.29384+QD+1489430458+.05029+DP+1027955653+10.938~5400.50~RD~A~ON~BRAND OR LABEL~AB~CUST12345~BL~ASSEMBLY~ON~BRAND OR LABEL~AB~CUST12345~BL~ASSEMBLY~ON~BRAND OR LABEL~AB~CUST12345~BL~ASSEMBLY~ON~BRAND OR LABEL'MTX~DOD~TEXTUAL DATA~TEXTUAL DATA~LC~215074679~ENG'SI~AA~SRV~CUST12345~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345'PID~F~60~NR~UNSCENTED~GENERAL PURPOSE~TP~SUBQUALIFIER~N~ENG'PO3~QO~20080328~MNR~100.00~PD~100~HB~GENERAL PURPOSE'MEA~BA~CA~~QD+1565385295+.29384+DP+1031794429+.05029+HB+35534619+10.938+QD+1080368033+.29384+DP+608448177+.05029~11.00~200~07~06~BS~BM'TC2~B~SBEANS'ADV~AX~SRV~100.00~150.25~ALUM~SRV~119291.223'DTM~002~20080328~1952~PT~CM~DATE TIME PERIOD'CTP~AG~SLP~123.90~.500~HB+177377951+10.938+QD+705622477+.29384+DP+157474279+.05029+HB+2044043229+10.938+QD+381327151+.29384~CSD~.05029~665.75~LE~MILES~10'PAM~01~123.45~DP+153014333+10.938+HB+984935083+.29384+QD+18121562+.05029+DP+479085608+10.938+HB+1753074567+.29384~FL~100.00~DA~021~20080328~1615~038~20080328~0718~1~50.75~N'PO4~120~24~QD~BAG07~B~400~DP~24~HB~30~100~10~QD~12~OS~3ALDKF~AAA849~647591486'TAX~33939483921~IP~36201~IP~36299~IP~02535~IP~36201~IP~36299~1~C'N9~BT~12345678900987654321768958473~FREE FORM DESCRIPTION~20080328~1952~CT~CM+500+AB+3920394930203+BT+12345678900987654321768958473'DTM~002~20080328~1615~MT~MM~DATE TIME PERIOD'MTX~GEN~TEXTUAL DATA~TEXTUAL DATA~NP~944360826~ENG'SAC~A~A010~AA~AABBCCDDXX~50000~7~.25~10000~DP~100~.500~01~500~19029342ALSL~GENERAL PURPOSE~ENG'CUR~SE~USA~4.5948~BK~USA~NYC~021~20080328~0718~038~20080328~1952~002~20080328~1615~021~20080328~0718~038~20080328~1952'CTP~BR~ALT~5400.50~123.45~HB+969995518+.05029+QD+1714720927+10.938+DP+1329732462+.29384+HB+2085029370+.05029+QD+1303864735+10.938~CSR~.29384~50.00~RD~MILES~13'QTY~28~100~DP+1491226079+.05029+HB+134816300+10.938+QD+730526501+.29384+DP+1403623193+.05029+HB+39596018+10.938'SI~NR~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY'N1~AC~BEVERLY SIMPSON~0~111222333~11~SE'N2~ARTHUR JONES~MAGGIE MCGILLICUTTY'IN2~11~BEVERLY SIMPSON~ARTHUR JONES'N3~157 WEST 57TH STREET~103 NORTH MAIN STREET'N4~CINCINNATI~OH~43017~US~IP~02535'NX2~02~PO BOX 123~54178~07~157 WEST 57TH STREET'REF~CM~3920394930203~GENERAL PURPOSE~AB+12345678900987654321768958473+BT+500+CM+3920394930203'PER~EX~MAGGIE MCGILLICUTTY~TE~(614)555-1212~TE~(614)555-1212~TE~(614)555-1212~ADDL CONTACT DESC'SI~AX~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY~SRV~BRAND OR LABEL'AMT~NP~665.75~D'REF~AB~12345678900987654321768958473~GENERAL PURPOSE~BT+500+CM+3920394930203+AB+12345678900987654321768958473'PCT~1~10.25'LM~AA~SUBQUALIFIER'LQ~0~INDUSTRY CODE'CTT~10~855~50~QD~4000~DP~GENERAL PURPOSE'AMT~AC~100.00~C'SE~207~0001'GE~1~4'IEA~1~000000004'",
+                                        "transaction_id": "=number.random(1000000000)"
+                                    }
+                                }
+                            },
+                            "schemas": {
+                                "input": {
+                                    "input": {
+                                        "type": "json",
+                                        "value": "{\"$schema\":\"http://json-schema.org/draft-06/schema#\",\"type\":\"object\",\"properties\":{\"transaction_id\":{\"type\":\"string\"},\"biz_proc\":{\"type\":\"string\"},\"audit_event\":{\"type\":\"string\"},\"event_desc\":{\"type\":\"string\"},\"event_id\":{\"type\":\"string\"},\"event_timestamp\":{\"type\":\"string\"},\"event_status\":{\"type\":\"string\"},\"event_source\":{\"type\":\"string\"},\"event_destination\":{\"type\":\"string\"},\"extra_props\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"prop_name\":{\"type\":\"string\"},\"prop_value\":{\"type\":\"string\"}}}},\"parent_event_id\":{\"type\":\"string\"},\"payload\":{\"type\":\"string\"}},\"required\":[\"transaction_id\",\"biz_proc\",\"audit_event\",\"event_desc\",\"event_timestamp\",\"event_status\"]}",
+                                        "fe_metadata": "{\"$schema\":\"http://json-schema.org/draft-06/schema#\",\"type\":\"object\",\"properties\":{\"transaction_id\":{\"type\":\"string\"},\"biz_proc\":{\"type\":\"string\"},\"audit_event\":{\"type\":\"string\"},\"event_desc\":{\"type\":\"string\"},\"event_id\":{\"type\":\"string\"},\"event_timestamp\":{\"type\":\"string\"},\"event_status\":{\"type\":\"string\"},\"event_source\":{\"type\":\"string\"},\"event_destination\":{\"type\":\"string\"},\"extra_props\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"prop_name\":{\"type\":\"string\"},\"prop_value\":{\"type\":\"string\"}}}},\"parent_event_id\":{\"type\":\"string\"},\"payload\":{\"type\":\"string\"}},\"required\":[\"transaction_id\",\"biz_proc\",\"audit_event\",\"event_desc\",\"event_timestamp\",\"event_status\"]}"
+                                    }
+                                },
+                                "output": {
+                                    "output": {
+                                        "type": "json",
+                                        "value": "{\"$schema\":\"http://json-schema.org/draft-06/schema#\",\"type\":\"object\",\"properties\":{\"tas_event_id\":{\"type\":\"string\"},\"transaction_id\":{\"type\":\"string\"},\"event_id\":{\"type\":\"string\"}}}",
+                                        "fe_metadata": "{\"$schema\":\"http://json-schema.org/draft-06/schema#\",\"type\":\"object\",\"properties\":{\"tas_event_id\":{\"type\":\"string\"},\"transaction_id\":{\"type\":\"string\"},\"event_id\":{\"type\":\"string\"}}}"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "id": "OrderManagementSystem",
+                        "name": "OrderManagementSystem",
+                        "description": "Simple Log Message Activity",
+                        "activity": {
+                            "ref": "#log",
+                            "input": {
+                                "Log Level": "INFO",
+                                "flowInfo": false
+                            }
+                        }
+                    },
+                    {
+                        "id": "OrderCreationAuditEvent",
+                        "name": "OrderCreationAuditEvent",
+                        "description": "Use this activity to post an audit event to TIBCO Cloud(TM) AuditSafe",
+                        "activity": {
+                            "ref": "#txcreate",
+                            "input": {
+                                "input": {
+                                    "mapping": {
+                                        "biz_proc": "Wholesale Order",
+                                        "audit_event": "ORDER CREATION",
+                                        "event_desc": "Wholesale Sale Order is created in Order Management System for both the Items",
+                                        "event_timestamp": "=datetime.currentDatetime()",
+                                        "event_id": "2",
+                                        "event_status": "CREATED",
+                                        "event_source": "Order Management System",
+                                        "event_destination": "Inventory Validator",
+                                        "extra_props": [
+                                            {
+                                                "prop_name": "PO Number",
+                                                "prop_value": "S007346789"
+                                            }
+                                        ],
+                                        "parent_event_id": "=$activity[ReceivedB2BOrderAuditEvent].output.event_id",
+                                        "transaction_id": "=$activity[ReceivedB2BOrderAuditEvent].output.transaction_id"
+                                    }
+                                }
+                            },
+                            "schemas": {
+                                "input": {
+                                    "input": {
+                                        "type": "json",
+                                        "value": "{\"$schema\":\"http://json-schema.org/draft-06/schema#\",\"type\":\"object\",\"properties\":{\"transaction_id\":{\"type\":\"string\"},\"biz_proc\":{\"type\":\"string\"},\"audit_event\":{\"type\":\"string\"},\"event_desc\":{\"type\":\"string\"},\"event_id\":{\"type\":\"string\"},\"event_timestamp\":{\"type\":\"string\"},\"event_status\":{\"type\":\"string\"},\"event_source\":{\"type\":\"string\"},\"event_destination\":{\"type\":\"string\"},\"extra_props\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"prop_name\":{\"type\":\"string\"},\"prop_value\":{\"type\":\"string\"}}}},\"parent_event_id\":{\"type\":\"string\"},\"payload\":{\"type\":\"string\"}},\"required\":[\"transaction_id\",\"biz_proc\",\"audit_event\",\"event_desc\",\"event_timestamp\",\"event_status\"]}",
+                                        "fe_metadata": "{\"$schema\":\"http://json-schema.org/draft-06/schema#\",\"type\":\"object\",\"properties\":{\"transaction_id\":{\"type\":\"string\"},\"biz_proc\":{\"type\":\"string\"},\"audit_event\":{\"type\":\"string\"},\"event_desc\":{\"type\":\"string\"},\"event_id\":{\"type\":\"string\"},\"event_timestamp\":{\"type\":\"string\"},\"event_status\":{\"type\":\"string\"},\"event_source\":{\"type\":\"string\"},\"event_destination\":{\"type\":\"string\"},\"extra_props\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"prop_name\":{\"type\":\"string\"},\"prop_value\":{\"type\":\"string\"}}}},\"parent_event_id\":{\"type\":\"string\"},\"payload\":{\"type\":\"string\"}},\"required\":[\"transaction_id\",\"biz_proc\",\"audit_event\",\"event_desc\",\"event_timestamp\",\"event_status\"]}"
+                                    }
+                                },
+                                "output": {
+                                    "output": {
+                                        "type": "json",
+                                        "value": "{\"$schema\":\"http://json-schema.org/draft-06/schema#\",\"type\":\"object\",\"properties\":{\"tas_event_id\":{\"type\":\"string\"},\"transaction_id\":{\"type\":\"string\"},\"event_id\":{\"type\":\"string\"}}}",
+                                        "fe_metadata": "{\"$schema\":\"http://json-schema.org/draft-06/schema#\",\"type\":\"object\",\"properties\":{\"tas_event_id\":{\"type\":\"string\"},\"transaction_id\":{\"type\":\"string\"},\"event_id\":{\"type\":\"string\"}}}"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "id": "InventoryCheck",
+                        "name": "InventoryCheck",
+                        "description": "Simple Log Message Activity",
+                        "activity": {
+                            "ref": "#log",
+                            "input": {
+                                "Log Level": "INFO",
+                                "flowInfo": false
+                            }
+                        }
+                    },
+                    {
+                        "id": "InventoryCheckAuditEvent",
+                        "name": "InventoryCheckAuditEvent",
+                        "description": "Use this activity to post an audit event to TIBCO Cloud(TM) AuditSafe",
+                        "activity": {
+                            "ref": "#txcreate",
+                            "input": {
+                                "input": {
+                                    "mapping": {
+                                        "biz_proc": "Wholesale Order",
+                                        "audit_event": "INVENTORY CHECK",
+                                        "event_desc": "Physical inventory check performed for both the Items before sending to Fulfillment System",
+                                        "event_timestamp": "=datetime.currentDatetime()",
+                                        "event_id": "3",
+                                        "event_status": "COMPLETED",
+                                        "event_source": "Inventory Validator",
+                                        "extra_props": [
+                                            {
+                                                "prop_name": "PO Number",
+                                                "prop_value": "S007346789"
+                                            }
+                                        ],
+                                        "parent_event_id": "2",
+                                        "payload": "ISA~00~          ~00~          ~01~123456789      ~01~987654321      ~100616~1240~*~00403~000000004~0~P~+'GS~PO~Application Sen~Application Rec~20100616~1240~4~X~005010'ST~850~0001~IMPLEMENTATION CONVENTION REFERENCE'BEG~00~BK~99AKDF9DAL393~39483920193843~20080328~AN3920943~AC~IBM~02~AE~02~BA'CUR~AC~USA~.2939~SE~USA~IMF~002~20080328~1615~021~20080328~0718~038~20080328~1952~002~20080328~1615~021~20080328~0718'REF~AB~3920394930203~GENERAL PURPOSE~BT+12345678900987654321768958473+CM+500+AB+3920394930203'PER~AC~ARTHUR JONES~TE~(614)555-1212~TE~(614)555-1212~TE~(614)555-1212~ADDL CONTACT DESC'TAX~229438383~IP~02535~IP~36201~IP~36299~IP~02535~IP~36201~A~C'FOB~CA~IP~GENERAL PURPOSE~01~CFR~IP~GENERAL PURPOSE~BY~GENERAL PURPOSE'CTP~AG~ALT~100.00~100~DP+1387084417+10.938+HB+1191135548+.29384+QD+151375184+.05029+DP+172447798+10.938+HB+1318029790+.29384~CSD~.05029~100.00~PD~MILES~10'PAM~01~.500~QD+296871275+10.938+DP+2039114794+.29384+HB+173280309+.05029+QD+882799693+10.938+DP+778001999+.29384~AC~50.00~DA~038~20080328~1952~002~20080328~1615~1~10.25~N'CSH~B~A~10000~ACCT0001~20080328~AX~DL~B0~20.00~1'TC2~A~SBEANS'SAC~A~A010~AA~1~50000~1~.25~5000~HB~123.45~100~01~12345678900987654321768958473~PROMO292910~GENERAL PURPOSE~ENG'CUR~BK~USA~1.259~AC~USA~LNF~021~20080328~0718~038~20080328~1952~002~20080328~1615~021~20080328~0718~038~20080328~1952'ITD~01~1~.0035~20080328~60~20080328~10~1000~20080328~10000~.25~GENERAL PURPOSE~1~C~50.75'DIS~AMT~CA~10~DOF~1000~4200'INC~03~QD+618315015+.05029+DP+10220888+10.938+HB+694605289+.29384+QD+287125759+.05029+DP+74889888+10.938~.500~123.45~665.75~FL'DTM~002~20080328~1615~CT~CM~DATE TIME PERIOD'LIN~AAA849~AB~ASSEMBLY~BL~BRAND OR LABEL~ON~CUST12345~AB~ASSEMBLY~BL~BRAND OR LABEL~ON~CUST12345~AB~ASSEMBLY~BL~BRAND OR LABEL~ON~CUST12345~AB~ASSEMBLY~BL~BRAND OR LABEL~ON~CUST12345~AB~ASSEMBLY~BL~BRAND OR LABEL~ON~CUST12345'SI~NR~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY'PID~F~BC~AX~UNSCENTED~GENERAL PURPOSE~BS~SUBQUALIFIER~N~ENG'MEA~AA~A~~HB+1110130411+.29384+QD+227207086+.05029+DP+445812951+10.938+HB+1312172256+.29384+QD+190582094+.05029~11.00~200~01~01~OS~BM'PWK~AA~AE~1~SE~0~9012345918341~GENERAL PURPOSE~1+2+1+2+1~AR'PKG~F~10~AA~MARKED~GENERAL PURPOSE~01'TD1~BAG07~1234567~B~SBEANS~ONE OUNCE WIDGETS~A~12345678~DP~40~HB'TD5~A~0~111222333~A~ROUTING INFORMATION~AB~IP~36299~BS~AA~4230~AC~NM~ON~US'TD3~CR~AAAA~EQ48495~T~50~QD~N~01~30394938483234'TD4~BW~4~AC~GENERAL PURPOSE~N'MAN~GM~III789384839~MKD29393812910~L~3939348930IDKDLSIA~III789384839'PCT~1~10.25'CTB~AA~GENERAL PURPOSE~28~100~NP~100000~DP+145887121+10.938+HB+883971449+.29384+QD+378773390+.05029+DP+471729892+10.938+HB+1212584149+.29384'TXI~ST~100.00~20.00~CD~TAX JRSDCT~1~A~100.00~33939483921~888394'LDT~AA~.500~HR~20080328'QTY~43~123.45~QD+1750213682+.05029+DP+1814061862+10.938+HB+218032469+.29384+QD+2063779234+.05029+DP+975972386+10.938'MTX~ALL~TEXTUAL DATA~TEXTUAL DATA~DS~682048358~ENG'REF~BT~500~GENERAL PURPOSE~CM+3920394930203+AB+12345678900987654321768958473+BT+500'AMT~AC~50.00~C'REF~CM~3920394930203~GENERAL PURPOSE~AB+12345678900987654321768958473+BT+500+CM+3920394930203'DTM~021~20080328~0718~MT~MM~DATE TIME PERIOD'PCT~1~50.75'FA1~NR~A020~C'FA2~01~FINANCIAL INFORMATION CODE'N9~AB~12345678900987654321768958473~FREE FORM DESCRIPTION~20080328~1952~PT~BT+500+CM+3920394930203+AB+12345678900987654321768958473'DTM~038~20080328~1615~CT~YM~DATE TIME PERIOD'MTX~DOD~TEXTUAL DATA~TEXTUAL DATA~LC~293213191~ENG'PWK~BL~BM~2~BK~0~43202~GENERAL PURPOSE~2+1+2+1+2~AR'EFI~03~FREE FORM MESSAGE TEXT~9E~VERSION IDENTIFIER~PROGRAM IDENTIFIER~VERSION IDENTIFIER~INTERCHANGE FORMAT~VERSION IDENTIFIER~COMPRESSION TECHNIQUE~AV~FILE NAME~FIX~322119932~21~VERSION IDENTIFIER~ASB'N1~AC~MAGGIE MCGILLICUTTY~0~9012345918341~11~SE'N2~BEVERLY SIMPSON~ARTHUR JONES'IN2~02~MAGGIE MCGILLICUTTY~BEVERLY SIMPSON'N3~PO BOX 123~157 WEST 57TH STREET'N4~CINCINNATI~OH~43017~US~IP~02535'NX2~01~103 NORTH MAIN STREET~95391~02~PO BOX 123'REF~BT~500~GENERAL PURPOSE~CM+3920394930203+AB+12345678900987654321768958473+BT+500'PER~CR~ARTHUR JONES~TE~(614)555-1212~TE~(614)555-1212~TE~(614)555-1212~ADDL CONTACT DESC'SI~AX~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY~SRV~BRAND OR LABEL'FOB~PA~IP~GENERAL PURPOSE~02~CFR~IP~GENERAL PURPOSE~FE~GENERAL PURPOSE'TD1~BBL94~50~C~SBEANS~FIFTEEN POUND WIDGETS~B~40~HB~400~QD'TD5~B~0~111222333~U~ROUTING INFORMATION~CO~IP~36201~SB~HO~7450~AC~NM~ON~US'TD3~HV~AKEI~EQ12349~A~12345678~DP~R~03~394899111098456'TD4~SM~A~PS~GENERAL PURPOSE~N'PKG~F~37~AA~MARKED~GENERAL PURPOSE~03'LM~NR~SUBQUALIFIER'LQ~0~INDUSTRY CODE'SPI~09~CM~3920394930203~TITLE OF THE DATA ENTITY~ENTITY PURPOSE~A~10~DR~02~AX~SUBQUALIFIER~293212~I~AA~0001'REF~AB~12345678900987654321768958473~GENERAL PURPOSE~BT+500+CM+3920394930203+AB+12345678900987654321768958473'DTM~002~20080328~0718~MT~CM~DATE TIME PERIOD'MTX~GEN~TEXTUAL DATA~TEXTUAL DATA~NP~558215129~ENG'N1~BK~MAGGIE MCGILLICUTTY~0~43202~13~AC'N2~BEVERLY SIMPSON~ARTHUR JONES'N3~157 WEST 57TH STREET~103 NORTH MAIN STREET'N4~COLUMBUS~OH~43017~US~IP~36299'REF~BT~500~GENERAL PURPOSE~CM+3920394930203+AB+12345678900987654321768958473+BT+500'G61~EX~MAGGIE MCGILLICUTTY~TE~(614)555-1212~ADDL CONTACT DESC'MTX~ALL~TEXTUAL DATA~TEXTUAL DATA~DS~622531297~ENG'CB1~07~A'REF~CM~3920394930203~GENERAL PURPOSE~AB+12345678900987654321768958473+BT+500+CM+3920394930203'DTM~021~20080328~1952~PT~MM~DATE TIME PERIOD'LDT~AF~100~WK~20080328'MTX~DOD~TEXTUAL DATA~TEXTUAL DATA~LC~522321826~ENG'ADV~AA~SRV~100.00~150.25~CT9392~SRV~119291.223'DTM~038~20080328~1615~CT~YM~DATE TIME PERIOD'MTX~GEN~TEXTUAL DATA~TEXTUAL DATA~NP~373486709~ENG'PO1~3ALDKF~.500~HB~123.90~LE~AB~CUST12345~BL~ASSEMBLY~ON~BRAND OR LABEL~AB~CUST12345~BL~ASSEMBLY~ON~BRAND OR LABEL~AB~CUST12345~BL~ASSEMBLY~ON~BRAND OR LABEL~AB~CUST12345'LIN~AAA849~BL~ASSEMBLY~ON~BRAND OR LABEL~AB~CUST12345~BL~ASSEMBLY~ON~BRAND OR LABEL~AB~CUST12345~BL~ASSEMBLY~ON~BRAND OR LABEL~AB~CUST12345~BL~ASSEMBLY~ON~BRAND OR LABEL~AB~CUST12345~BL~ASSEMBLY~ON~BRAND OR LABEL~AB~CUST12345'SI~NR~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY'CUR~SE~USA~4.5948~BK~USA~NYC~002~20080328~0718~021~20080328~1952~038~20080328~1615~002~20080328~0718~021~20080328~1952'CN1~04~665.75~.10~12345678900987654321768958473~.25~VERSION IDENTIFIER'PO3~AQ~20080328~MNR~5400.50~RD~123.45~QD~GENERAL PURPOSE'CTP~BR~SLP~100.00~100~DP+1218379213+.29384+HB+1978525058+.05029+QD+2034754308+10.938+DP+231310647+.29384+HB+356545966+.05029~CSR~10.938~100.00~PD~MILES~13'CUR~AC~USA~.2939~SE~USA~IMF~038~20080328~1615~002~20080328~0718~021~20080328~1952~038~20080328~1615~002~20080328~0718'PAM~01~.500~QD+188914096+.29384+DP+1096408465+.05029+HB+107532689+10.938+QD+1963565109+.29384+DP+805733801+.05029~FL~50.00~DA~021~20080328~1952~038~20080328~1615~1~10.25~N'MEA~CO~BE~~HB+1136558184+10.938+QD+992791078+.29384+DP+549292766+.05029+HB+1775671454+10.938+QD+434064727+.29384~50~201.20~03~03~TP~BM'PID~F~10~AX~UNSCENTED~GENERAL PURPOSE~BS~SUBQUALIFIER~N~ENG'MEA~BA~CA~~DP+1991332373+.05029+HB+275506954+10.938+QD+2010887905+.29384+DP+647294122+.05029+HB+2035001580+10.938~11.00~200~07~06~OS~BM'PWK~AA~SN~3~BK~0~9012345918341~GENERAL PURPOSE~1+2+1+2+1~AR'PO4~24~12~QD~PLT37~T~100~DP~100~HB~45~50~123456~QD~21~TP~888394~3ALDKF~826061849'REF~AB~500~GENERAL PURPOSE~BT+3920394930203+CM+12345678900987654321768958473+AB+500'PER~AC~BEVERLY SIMPSON~TE~(614)555-1212~TE~(614)555-1212~TE~(614)555-1212~ADDL CONTACT DESC'SAC~N~A030~AA~ABC60~10000~3~.15~450000~DP~123.45~100~01~3920394930203~PR939201~GENERAL PURPOSE~ENG'CUR~AC~USA~1.259~SE~USA~LNF~002~20080328~0718~021~20080328~1952~038~20080328~1615~002~20080328~0718~021~20080328~1952'CTP~GV~ALT~123.90~.500~HB+950778452+.29384+QD+306018330+.05029+DP+1476388202+10.938+HB+523044528+.29384+QD+504872872+.05029~ILP~10.938~665.75~LE~MILES~14'IT8~F~D~50000~182389281~20080328~NR~B2~BL~BRAND OR LABEL~ON~CUST12345~AB~ASSEMBLY~BL~BRAND OR LABEL~ON~CUST12345~AB~ASSEMBLY~BL~BRAND OR LABEL~ON~CUST12345~AB~ASSEMBLY~BL~BRAND OR LABEL'CSH~W~E~100000~20934801~20080328~AX~D1~X~20.00~1'ITD~12~8~.0010~20080328~90~20080328~30~10000~20080328~50000~.10~GENERAL PURPOSE~15~E~50.75'DIS~CSH~PC~.0434~DAT~50~1000'INC~01~DP+1420683793+.29384+HB+528939340+.05029+QD+259864053+10.938+DP+1522481224+.29384+HB+1646796291+.05029~123.45~100~100.00~NP'TAX~222948392034~IP~02535~IP~36201~IP~36299~IP~02535~IP~36201~2~C'FOB~PB~IP~GENERAL PURPOSE~ZZ~CFR~IP~GENERAL PURPOSE~PP~GENERAL PURPOSE'SDQ~QD~0~111222333~.500~43202~123.45~9012345918341~100~111222333~.500~43202~123.45~9012345918341~100~111222333~.500~43202~123.45~9012345918341~100~111222333~.500~36299'IT3~100~DP~IC~100~GU'DTM~038~20080328~1615~MT~CM~DATE TIME PERIOD'TC2~A~SBEANS'TD1~BAG07~100~B~SBEANS~CUBIC YARD WIDGETS IN VARIOUS~B~50~HB~4000~QD'TD5~I~0~43202~M~ROUTING INFORMATION~AB~IP~02535~SS~WD~9500~AC~NM~ON~US'TD3~LO~IIBL~EQ8373A~A~40~DP~S~04~39483920294'TD4~TSC~U~SN~GENERAL PURPOSE~N'PCT~1~10.25'MAN~SM~MKD29393812910~3939348930IDKDLSIA~GM~III789384839~MKD29393812910'MTX~ALL~TEXTUAL DATA~TEXTUAL DATA~DS~768822358~ENG'SPI~03~BT~12345678900987654321768958473~TITLE OF THE DATA ENTITY~ENTITY PURPOSE~D~12~BL~09~AA~SUBQUALIFIER~100~R~AA~0002'TXI~FT~50.00~20.00~VE~TAX JRSDCT~A~D~450.00~229438383~AAA849'CTB~AA~GENERAL PURPOSE~28~123.45~AC~10000~HB+998406540+10.938+QD+431255710+.29384+DP+441289551+.05029+HB+466532527+10.938+QD+1400482816+.29384'QTY~43~100~DP+2036741237+.05029+HB+1106082774+10.938+QD+4243644+.29384+DP+718140745+.05029+HB+1352697150+10.938'SI~NR~SRV~CUST12345~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345'SCH~.500~QD~BK~ARTHUR JONES~002~20080328~0718~021~20080328~1952~39349382~888394'TD1~BBL94~1234567~C~SBEANS~ONE OUNCE WIDGETS~T~12345678~DP~40~HB'TD5~A~0~9012345918341~A~ROUTING INFORMATION~CO~IP~36201~BS~AA~4230~AC~NM~ON~US'TD3~CR~AAAA~EQ48495~B~50~QD~N~01~30394938483234'TD4~BW~4~AC~GENERAL PURPOSE~N'REF~CM~500~GENERAL PURPOSE~AB+3920394930203+BT+12345678900987654321768958473+CM+500'PKG~F~63~AX~MARKED~GENERAL PURPOSE~05'MEA~AA~A~~DP+671727256+.29384+HB+1271061439+.05029+QD+66417669+10.938+DP+1724927565+.29384+HB+2013578969+.05029~100.00~150.25~01~01~BS~BM'LS~LDT'LDT~AS~123.45~HR~20080328'QTY~01~100~QD+336055940+10.938+DP+266521831+.29384+HB+1035198385+.05029+QD+834701171+10.938+DP+1978710267+.29384'MTX~DOD~TEXTUAL DATA~TEXTUAL DATA~LC~923927488~ENG'REF~AB~3920394930203~GENERAL PURPOSE~BT+12345678900987654321768958473+CM+500+AB+3920394930203'LM~AA~SUBQUALIFIER'LQ~0~INDUSTRY CODE'LE~LDT'N9~BT~12345678900987654321768958473~FREE FORM DESCRIPTION~20080328~1615~PT~CM+500+AB+3920394930203+BT+12345678900987654321768958473'DTM~038~20080328~0718~CT~MM~DATE TIME PERIOD'MEA~CO~BE~500~HB+231671036+.05029+QD+956461241+10.938+DP+53150194+.29384+HB+1238291834+.05029+QD+1245585474+10.938~50~201.20~03~~OS~BM'MTX~GEN~TEXTUAL DATA~TEXTUAL DATA~NP~915706971~ENG'PWK~DR~AE~1~AC~0~111222333~GENERAL PURPOSE~2+1+2+1+2~AR'EFI~02~FREE FORM MESSAGE TEXT~9N~VERSION IDENTIFIER~PROGRAM IDENTIFIER~VERSION IDENTIFIER~INTERCHANGE FORMAT~VERSION IDENTIFIER~COMPRESSION TECHNIQUE~CH~FILE NAME~VAR~22194922111~56~VERSION IDENTIFIER~ASB'N1~SE~MAGGIE MCGILLICUTTY~0~43202~19~BK'N2~BEVERLY SIMPSON~ARTHUR JONES'IN2~05~MAGGIE MCGILLICUTTY~BEVERLY SIMPSON'N3~PO BOX 123~157 WEST 57TH STREET'N4~CLEVELAND~OH~43017~US~IP~36299'QTY~28~.500~DP+1359656823+.29384+HB+1805955795+.05029+QD+462445330+10.938+DP+832324677+.29384+HB+1188372343+.05029'NX2~07~103 NORTH MAIN STREET~23442~01~PO BOX 123'REF~CM~500~GENERAL PURPOSE~AB+3920394930203+BT+12345678900987654321768958473+CM+500'PER~CR~ARTHUR JONES~TE~(614)555-1212~TE~(614)555-1212~TE~(614)555-1212~ADDL CONTACT DESC'SI~NR~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY'DTM~002~20080328~1952~MT~YM~DATE TIME PERIOD'FOB~CA~IP~GENERAL PURPOSE~01~CFR~IP~GENERAL PURPOSE~BY~GENERAL PURPOSE'SCH~123.45~QD~AC~MAGGIE MCGILLICUTTY~021~20080328~1615~038~20080328~0718~3948329~3ALDKF'TD1~PLT37~50~A~SBEANS~FIFTEEN POUND WIDGETS~A~40~DP~400~HB'TD5~B~0~9012345918341~U~ROUTING INFORMATION~IC~IP~02535~SB~HO~7450~AC~NM~ON~US'TD3~HV~AKEI~EQ12349~T~12345678~QD~R~03~394899111098456'TD4~SM~A~PS~GENERAL PURPOSE~N'PKG~F~10~AX~MARKED~GENERAL PURPOSE~01'LDT~AA~100~WK~20080328'MAN~L~3939348930IDKDLSIA~III789384839~SM~MKD29393812910~3939348930IDKDLSIA'QTY~43~.500~DP+897761445+10.938+HB+1023630009+.29384+QD+406805422+.05029+DP+784739074+10.938+HB+57141831+.29384'MTX~ALL~TEXTUAL DATA~TEXTUAL DATA~DS~12361472~ENG'REF~AB~3920394930203~GENERAL PURPOSE~BT+12345678900987654321768958473+CM+500+AB+3920394930203'SLN~AAA849~888394~I~123.45~QD+1695743539+.05029+DP+986341539+10.938+HB+369198664+.29384+QD+1489430458+.05029+DP+1027955653+10.938~5400.50~RD~A~ON~BRAND OR LABEL~AB~CUST12345~BL~ASSEMBLY~ON~BRAND OR LABEL~AB~CUST12345~BL~ASSEMBLY~ON~BRAND OR LABEL~AB~CUST12345~BL~ASSEMBLY~ON~BRAND OR LABEL'MTX~DOD~TEXTUAL DATA~TEXTUAL DATA~LC~215074679~ENG'SI~AA~SRV~CUST12345~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345'PID~F~60~NR~UNSCENTED~GENERAL PURPOSE~TP~SUBQUALIFIER~N~ENG'PO3~QO~20080328~MNR~100.00~PD~100~HB~GENERAL PURPOSE'MEA~BA~CA~~QD+1565385295+.29384+DP+1031794429+.05029+HB+35534619+10.938+QD+1080368033+.29384+DP+608448177+.05029~11.00~200~07~06~BS~BM'TC2~B~SBEANS'ADV~AX~SRV~100.00~150.25~ALUM~SRV~119291.223'DTM~002~20080328~1952~PT~CM~DATE TIME PERIOD'CTP~AG~SLP~123.90~.500~HB+177377951+10.938+QD+705622477+.29384+DP+157474279+.05029+HB+2044043229+10.938+QD+381327151+.29384~CSD~.05029~665.75~LE~MILES~10'PAM~01~123.45~DP+153014333+10.938+HB+984935083+.29384+QD+18121562+.05029+DP+479085608+10.938+HB+1753074567+.29384~FL~100.00~DA~021~20080328~1615~038~20080328~0718~1~50.75~N'PO4~120~24~QD~BAG07~B~400~DP~24~HB~30~100~10~QD~12~OS~3ALDKF~AAA849~647591486'TAX~33939483921~IP~36201~IP~36299~IP~02535~IP~36201~IP~36299~1~C'N9~BT~12345678900987654321768958473~FREE FORM DESCRIPTION~20080328~1952~CT~CM+500+AB+3920394930203+BT+12345678900987654321768958473'DTM~002~20080328~1615~MT~MM~DATE TIME PERIOD'MTX~GEN~TEXTUAL DATA~TEXTUAL DATA~NP~944360826~ENG'SAC~A~A010~AA~AABBCCDDXX~50000~7~.25~10000~DP~100~.500~01~500~19029342ALSL~GENERAL PURPOSE~ENG'CUR~SE~USA~4.5948~BK~USA~NYC~021~20080328~0718~038~20080328~1952~002~20080328~1615~021~20080328~0718~038~20080328~1952'CTP~BR~ALT~5400.50~123.45~HB+969995518+.05029+QD+1714720927+10.938+DP+1329732462+.29384+HB+2085029370+.05029+QD+1303864735+10.938~CSR~.29384~50.00~RD~MILES~13'QTY~28~100~DP+1491226079+.05029+HB+134816300+10.938+QD+730526501+.29384+DP+1403623193+.05029+HB+39596018+10.938'SI~NR~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY'N1~AC~BEVERLY SIMPSON~0~111222333~11~SE'N2~ARTHUR JONES~MAGGIE MCGILLICUTTY'IN2~11~BEVERLY SIMPSON~ARTHUR JONES'N3~157 WEST 57TH STREET~103 NORTH MAIN STREET'N4~CINCINNATI~OH~43017~US~IP~02535'NX2~02~PO BOX 123~54178~07~157 WEST 57TH STREET'REF~CM~3920394930203~GENERAL PURPOSE~AB+12345678900987654321768958473+BT+500+CM+3920394930203'PER~EX~MAGGIE MCGILLICUTTY~TE~(614)555-1212~TE~(614)555-1212~TE~(614)555-1212~ADDL CONTACT DESC'SI~AX~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY~SRV~BRAND OR LABEL'AMT~NP~665.75~D'REF~AB~12345678900987654321768958473~GENERAL PURPOSE~BT+500+CM+3920394930203+AB+12345678900987654321768958473'PCT~1~10.25'LM~AA~SUBQUALIFIER'LQ~0~INDUSTRY CODE'CTT~10~855~50~QD~4000~DP~GENERAL PURPOSE'AMT~AC~100.00~C'SE~207~0001'GE~1~4'IEA~1~000000004'",
+                                        "transaction_id": "=$activity[OrderCreationAuditEvent].output.transaction_id"
+                                    }
+                                }
+                            },
+                            "schemas": {
+                                "input": {
+                                    "input": {
+                                        "type": "json",
+                                        "value": "{\"$schema\":\"http://json-schema.org/draft-06/schema#\",\"type\":\"object\",\"properties\":{\"transaction_id\":{\"type\":\"string\"},\"biz_proc\":{\"type\":\"string\"},\"audit_event\":{\"type\":\"string\"},\"event_desc\":{\"type\":\"string\"},\"event_id\":{\"type\":\"string\"},\"event_timestamp\":{\"type\":\"string\"},\"event_status\":{\"type\":\"string\"},\"event_source\":{\"type\":\"string\"},\"event_destination\":{\"type\":\"string\"},\"extra_props\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"prop_name\":{\"type\":\"string\"},\"prop_value\":{\"type\":\"string\"}}}},\"parent_event_id\":{\"type\":\"string\"},\"payload\":{\"type\":\"string\"}},\"required\":[\"transaction_id\",\"biz_proc\",\"audit_event\",\"event_desc\",\"event_timestamp\",\"event_status\"]}",
+                                        "fe_metadata": "{\"$schema\":\"http://json-schema.org/draft-06/schema#\",\"type\":\"object\",\"properties\":{\"transaction_id\":{\"type\":\"string\"},\"biz_proc\":{\"type\":\"string\"},\"audit_event\":{\"type\":\"string\"},\"event_desc\":{\"type\":\"string\"},\"event_id\":{\"type\":\"string\"},\"event_timestamp\":{\"type\":\"string\"},\"event_status\":{\"type\":\"string\"},\"event_source\":{\"type\":\"string\"},\"event_destination\":{\"type\":\"string\"},\"extra_props\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"prop_name\":{\"type\":\"string\"},\"prop_value\":{\"type\":\"string\"}}}},\"parent_event_id\":{\"type\":\"string\"},\"payload\":{\"type\":\"string\"}},\"required\":[\"transaction_id\",\"biz_proc\",\"audit_event\",\"event_desc\",\"event_timestamp\",\"event_status\"]}"
+                                    }
+                                },
+                                "output": {
+                                    "output": {
+                                        "type": "json",
+                                        "value": "{\"$schema\":\"http://json-schema.org/draft-06/schema#\",\"type\":\"object\",\"properties\":{\"tas_event_id\":{\"type\":\"string\"},\"transaction_id\":{\"type\":\"string\"},\"event_id\":{\"type\":\"string\"}}}",
+                                        "fe_metadata": "{\"$schema\":\"http://json-schema.org/draft-06/schema#\",\"type\":\"object\",\"properties\":{\"tas_event_id\":{\"type\":\"string\"},\"transaction_id\":{\"type\":\"string\"},\"event_id\":{\"type\":\"string\"}}}"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "id": "WMS",
+                        "name": "WMS",
+                        "description": "Simple Log Message Activity",
+                        "activity": {
+                            "ref": "#log",
+                            "input": {
+                                "Log Level": "INFO",
+                                "flowInfo": false
+                            }
+                        }
+                    },
+                    {
+                        "id": "DO1CreationAuditEvent",
+                        "name": "DO1CreationAuditEvent",
+                        "description": "Use this activity to post an audit event to TIBCO Cloud(TM) AuditSafe",
+                        "activity": {
+                            "ref": "#txcreate",
+                            "input": {
+                                "input": {
+                                    "mapping": {
+                                        "biz_proc": "Wholesale Order",
+                                        "audit_event": "DO CREATION",
+                                        "event_desc": "Delivery order 1 is created and sent to Fulfillment Center",
+                                        "event_timestamp": "=datetime.currentDatetime()",
+                                        "event_status": "PENDING",
+                                        "event_source": "Order Management System",
+                                        "event_destination": "Wearhouse Management System",
+                                        "extra_props": [
+                                            {
+                                                "prop_name": "DO Number",
+                                                "prop_value": "D12343298"
+                                            }
+                                        ],
+                                        "parent_event_id": "=$activity[InventoryCheckAuditEvent].output.event_id",
+                                        "transaction_id": "=$activity[InventoryCheckAuditEvent].output.transaction_id"
+                                    }
+                                }
+                            },
+                            "schemas": {
+                                "input": {
+                                    "input": {
+                                        "type": "json",
+                                        "value": "{\"$schema\":\"http://json-schema.org/draft-06/schema#\",\"type\":\"object\",\"properties\":{\"transaction_id\":{\"type\":\"string\"},\"biz_proc\":{\"type\":\"string\"},\"audit_event\":{\"type\":\"string\"},\"event_desc\":{\"type\":\"string\"},\"event_id\":{\"type\":\"string\"},\"event_timestamp\":{\"type\":\"string\"},\"event_status\":{\"type\":\"string\"},\"event_source\":{\"type\":\"string\"},\"event_destination\":{\"type\":\"string\"},\"extra_props\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"prop_name\":{\"type\":\"string\"},\"prop_value\":{\"type\":\"string\"}}}},\"parent_event_id\":{\"type\":\"string\"},\"payload\":{\"type\":\"string\"}},\"required\":[\"transaction_id\",\"biz_proc\",\"audit_event\",\"event_desc\",\"event_timestamp\",\"event_status\"]}",
+                                        "fe_metadata": "{\"$schema\":\"http://json-schema.org/draft-06/schema#\",\"type\":\"object\",\"properties\":{\"transaction_id\":{\"type\":\"string\"},\"biz_proc\":{\"type\":\"string\"},\"audit_event\":{\"type\":\"string\"},\"event_desc\":{\"type\":\"string\"},\"event_id\":{\"type\":\"string\"},\"event_timestamp\":{\"type\":\"string\"},\"event_status\":{\"type\":\"string\"},\"event_source\":{\"type\":\"string\"},\"event_destination\":{\"type\":\"string\"},\"extra_props\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"prop_name\":{\"type\":\"string\"},\"prop_value\":{\"type\":\"string\"}}}},\"parent_event_id\":{\"type\":\"string\"},\"payload\":{\"type\":\"string\"}},\"required\":[\"transaction_id\",\"biz_proc\",\"audit_event\",\"event_desc\",\"event_timestamp\",\"event_status\"]}"
+                                    }
+                                },
+                                "output": {
+                                    "output": {
+                                        "type": "json",
+                                        "value": "{\"$schema\":\"http://json-schema.org/draft-06/schema#\",\"type\":\"object\",\"properties\":{\"tas_event_id\":{\"type\":\"string\"},\"transaction_id\":{\"type\":\"string\"},\"event_id\":{\"type\":\"string\"}}}",
+                                        "fe_metadata": "{\"$schema\":\"http://json-schema.org/draft-06/schema#\",\"type\":\"object\",\"properties\":{\"tas_event_id\":{\"type\":\"string\"},\"transaction_id\":{\"type\":\"string\"},\"event_id\":{\"type\":\"string\"}}}"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "id": "Shipment1CreationAuditEvent",
+                        "name": "Shipment1CreationAuditEvent",
+                        "description": "Use this activity to post an audit event to TIBCO Cloud(TM) AuditSafe",
+                        "activity": {
+                            "ref": "#txcreate",
+                            "input": {
+                                "input": {
+                                    "mapping": {
+                                        "biz_proc": "Wholesale Order",
+                                        "audit_event": "SHIPMENT CREATION",
+                                        "transaction_id": "=$activity[DO1CreationAuditEvent].output.transaction_id",
+                                        "event_desc": "Shipment 1 is built of the packages/ delivery orders",
+                                        "event_timestamp": "=datetime.currentDatetime()",
+                                        "event_status": "PENDING",
+                                        "event_source": "Shipment",
+                                        "extra_props": [
+                                            {
+                                                "prop_name": "DO Number",
+                                                "prop_value": "D12343298"
+                                            }
+                                        ],
+                                        "parent_event_id": "=$activity[DO1CreationAuditEvent].output.tas_event_id"
+                                    }
+                                }
+                            },
+                            "schemas": {
+                                "input": {
+                                    "input": {
+                                        "type": "json",
+                                        "value": "{\"$schema\":\"http://json-schema.org/draft-06/schema#\",\"type\":\"object\",\"properties\":{\"transaction_id\":{\"type\":\"string\"},\"biz_proc\":{\"type\":\"string\"},\"audit_event\":{\"type\":\"string\"},\"event_desc\":{\"type\":\"string\"},\"event_id\":{\"type\":\"string\"},\"event_timestamp\":{\"type\":\"string\"},\"event_status\":{\"type\":\"string\"},\"event_source\":{\"type\":\"string\"},\"event_destination\":{\"type\":\"string\"},\"extra_props\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"prop_name\":{\"type\":\"string\"},\"prop_value\":{\"type\":\"string\"}}}},\"parent_event_id\":{\"type\":\"string\"},\"payload\":{\"type\":\"string\"}},\"required\":[\"transaction_id\",\"biz_proc\",\"audit_event\",\"event_desc\",\"event_timestamp\",\"event_status\"]}",
+                                        "fe_metadata": "{\"$schema\":\"http://json-schema.org/draft-06/schema#\",\"type\":\"object\",\"properties\":{\"transaction_id\":{\"type\":\"string\"},\"biz_proc\":{\"type\":\"string\"},\"audit_event\":{\"type\":\"string\"},\"event_desc\":{\"type\":\"string\"},\"event_id\":{\"type\":\"string\"},\"event_timestamp\":{\"type\":\"string\"},\"event_status\":{\"type\":\"string\"},\"event_source\":{\"type\":\"string\"},\"event_destination\":{\"type\":\"string\"},\"extra_props\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"prop_name\":{\"type\":\"string\"},\"prop_value\":{\"type\":\"string\"}}}},\"parent_event_id\":{\"type\":\"string\"},\"payload\":{\"type\":\"string\"}},\"required\":[\"transaction_id\",\"biz_proc\",\"audit_event\",\"event_desc\",\"event_timestamp\",\"event_status\"]}"
+                                    }
+                                },
+                                "output": {
+                                    "output": {
+                                        "type": "json",
+                                        "value": "{\"$schema\":\"http://json-schema.org/draft-06/schema#\",\"type\":\"object\",\"properties\":{\"tas_event_id\":{\"type\":\"string\"},\"transaction_id\":{\"type\":\"string\"},\"event_id\":{\"type\":\"string\"}}}",
+                                        "fe_metadata": "{\"$schema\":\"http://json-schema.org/draft-06/schema#\",\"type\":\"object\",\"properties\":{\"tas_event_id\":{\"type\":\"string\"},\"transaction_id\":{\"type\":\"string\"},\"event_id\":{\"type\":\"string\"}}}"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "id": "Delivery1AuditEvent",
+                        "name": "Delivery1AuditEvent",
+                        "description": "Use this activity to post an audit event to TIBCO Cloud(TM) AuditSafe",
+                        "activity": {
+                            "ref": "#txcreate",
+                            "input": {
+                                "input": {
+                                    "mapping": {
+                                        "transaction_id": "=$activity[Shipment1CreationAuditEvent].output.transaction_id",
+                                        "biz_proc": "Wholesale Order",
+                                        "audit_event": "DELIVERY",
+                                        "event_desc": "Shipment 1 is picked by carrier and delivered",
+                                        "event_timestamp": "=datetime.currentDatetime()",
+                                        "event_status": "COMPLETED",
+                                        "event_source": "Delivery",
+                                        "extra_props": [
+                                            {
+                                                "prop_name": "DO Number",
+                                                "prop_value": "D12343298"
+                                            }
+                                        ],
+                                        "parent_event_id": "=$activity[Shipment1CreationAuditEvent].output.tas_event_id",
+                                        "payload": "ISA~00~          ~00~          ~01~123456789      ~01~987654321      ~100616~1240~*~00403~000000004~0~P~+'GS~PO~Application Sen~Application Rec~20100616~1240~4~X~005010'ST~850~0001~IMPLEMENTATION CONVENTION REFERENCE'BEG~00~BK~99AKDF9DAL393~39483920193843~20080328~AN3920943~AC~IBM~02~AE~02~BA'CUR~AC~USA~.2939~SE~USA~IMF~002~20080328~1615~021~20080328~0718~038~20080328~1952~002~20080328~1615~021~20080328~0718'REF~AB~3920394930203~GENERAL PURPOSE~BT+12345678900987654321768958473+CM+500+AB+3920394930203'PER~AC~ARTHUR JONES~TE~(614)555-1212~TE~(614)555-1212~TE~(614)555-1212~ADDL CONTACT DESC'TAX~229438383~IP~02535~IP~36201~IP~36299~IP~02535~IP~36201~A~C'FOB~CA~IP~GENERAL PURPOSE~01~CFR~IP~GENERAL PURPOSE~BY~GENERAL PURPOSE'CTP~AG~ALT~100.00~100~DP+1387084417+10.938+HB+1191135548+.29384+QD+151375184+.05029+DP+172447798+10.938+HB+1318029790+.29384~CSD~.05029~100.00~PD~MILES~10'PAM~01~.500~QD+296871275+10.938+DP+2039114794+.29384+HB+173280309+.05029+QD+882799693+10.938+DP+778001999+.29384~AC~50.00~DA~038~20080328~1952~002~20080328~1615~1~10.25~N'CSH~B~A~10000~ACCT0001~20080328~AX~DL~B0~20.00~1'TC2~A~SBEANS'SAC~A~A010~AA~1~50000~1~.25~5000~HB~123.45~100~01~12345678900987654321768958473~PROMO292910~GENERAL PURPOSE~ENG'CUR~BK~USA~1.259~AC~USA~LNF~021~20080328~0718~038~20080328~1952~002~20080328~1615~021~20080328~0718~038~20080328~1952'ITD~01~1~.0035~20080328~60~20080328~10~1000~20080328~10000~.25~GENERAL PURPOSE~1~C~50.75'DIS~AMT~CA~10~DOF~1000~4200'INC~03~QD+618315015+.05029+DP+10220888+10.938+HB+694605289+.29384+QD+287125759+.05029+DP+74889888+10.938~.500~123.45~665.75~FL'DTM~002~20080328~1615~CT~CM~DATE TIME PERIOD'LIN~AAA849~AB~ASSEMBLY~BL~BRAND OR LABEL~ON~CUST12345~AB~ASSEMBLY~BL~BRAND OR LABEL~ON~CUST12345~AB~ASSEMBLY~BL~BRAND OR LABEL~ON~CUST12345~AB~ASSEMBLY~BL~BRAND OR LABEL~ON~CUST12345~AB~ASSEMBLY~BL~BRAND OR LABEL~ON~CUST12345'SI~NR~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY'PID~F~BC~AX~UNSCENTED~GENERAL PURPOSE~BS~SUBQUALIFIER~N~ENG'MEA~AA~A~~HB+1110130411+.29384+QD+227207086+.05029+DP+445812951+10.938+HB+1312172256+.29384+QD+190582094+.05029~11.00~200~01~01~OS~BM'PWK~AA~AE~1~SE~0~9012345918341~GENERAL PURPOSE~1+2+1+2+1~AR'PKG~F~10~AA~MARKED~GENERAL PURPOSE~01'TD1~BAG07~1234567~B~SBEANS~ONE OUNCE WIDGETS~A~12345678~DP~40~HB'TD5~A~0~111222333~A~ROUTING INFORMATION~AB~IP~36299~BS~AA~4230~AC~NM~ON~US'TD3~CR~AAAA~EQ48495~T~50~QD~N~01~30394938483234'TD4~BW~4~AC~GENERAL PURPOSE~N'MAN~GM~III789384839~MKD29393812910~L~3939348930IDKDLSIA~III789384839'PCT~1~10.25'CTB~AA~GENERAL PURPOSE~28~100~NP~100000~DP+145887121+10.938+HB+883971449+.29384+QD+378773390+.05029+DP+471729892+10.938+HB+1212584149+.29384'TXI~ST~100.00~20.00~CD~TAX JRSDCT~1~A~100.00~33939483921~888394'LDT~AA~.500~HR~20080328'QTY~43~123.45~QD+1750213682+.05029+DP+1814061862+10.938+HB+218032469+.29384+QD+2063779234+.05029+DP+975972386+10.938'MTX~ALL~TEXTUAL DATA~TEXTUAL DATA~DS~682048358~ENG'REF~BT~500~GENERAL PURPOSE~CM+3920394930203+AB+12345678900987654321768958473+BT+500'AMT~AC~50.00~C'REF~CM~3920394930203~GENERAL PURPOSE~AB+12345678900987654321768958473+BT+500+CM+3920394930203'DTM~021~20080328~0718~MT~MM~DATE TIME PERIOD'PCT~1~50.75'FA1~NR~A020~C'FA2~01~FINANCIAL INFORMATION CODE'N9~AB~12345678900987654321768958473~FREE FORM DESCRIPTION~20080328~1952~PT~BT+500+CM+3920394930203+AB+12345678900987654321768958473'DTM~038~20080328~1615~CT~YM~DATE TIME PERIOD'MTX~DOD~TEXTUAL DATA~TEXTUAL DATA~LC~293213191~ENG'PWK~BL~BM~2~BK~0~43202~GENERAL PURPOSE~2+1+2+1+2~AR'EFI~03~FREE FORM MESSAGE TEXT~9E~VERSION IDENTIFIER~PROGRAM IDENTIFIER~VERSION IDENTIFIER~INTERCHANGE FORMAT~VERSION IDENTIFIER~COMPRESSION TECHNIQUE~AV~FILE NAME~FIX~322119932~21~VERSION IDENTIFIER~ASB'N1~AC~MAGGIE MCGILLICUTTY~0~9012345918341~11~SE'N2~BEVERLY SIMPSON~ARTHUR JONES'IN2~02~MAGGIE MCGILLICUTTY~BEVERLY SIMPSON'N3~PO BOX 123~157 WEST 57TH STREET'N4~CINCINNATI~OH~43017~US~IP~02535'NX2~01~103 NORTH MAIN STREET~95391~02~PO BOX 123'REF~BT~500~GENERAL PURPOSE~CM+3920394930203+AB+12345678900987654321768958473+BT+500'PER~CR~ARTHUR JONES~TE~(614)555-1212~TE~(614)555-1212~TE~(614)555-1212~ADDL CONTACT DESC'SI~AX~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY~SRV~BRAND OR LABEL'FOB~PA~IP~GENERAL PURPOSE~02~CFR~IP~GENERAL PURPOSE~FE~GENERAL PURPOSE'TD1~BBL94~50~C~SBEANS~FIFTEEN POUND WIDGETS~B~40~HB~400~QD'TD5~B~0~111222333~U~ROUTING INFORMATION~CO~IP~36201~SB~HO~7450~AC~NM~ON~US'TD3~HV~AKEI~EQ12349~A~12345678~DP~R~03~394899111098456'TD4~SM~A~PS~GENERAL PURPOSE~N'PKG~F~37~AA~MARKED~GENERAL PURPOSE~03'LM~NR~SUBQUALIFIER'LQ~0~INDUSTRY CODE'SPI~09~CM~3920394930203~TITLE OF THE DATA ENTITY~ENTITY PURPOSE~A~10~DR~02~AX~SUBQUALIFIER~293212~I~AA~0001'REF~AB~12345678900987654321768958473~GENERAL PURPOSE~BT+500+CM+3920394930203+AB+12345678900987654321768958473'DTM~002~20080328~0718~MT~CM~DATE TIME PERIOD'MTX~GEN~TEXTUAL DATA~TEXTUAL DATA~NP~558215129~ENG'N1~BK~MAGGIE MCGILLICUTTY~0~43202~13~AC'N2~BEVERLY SIMPSON~ARTHUR JONES'N3~157 WEST 57TH STREET~103 NORTH MAIN STREET'N4~COLUMBUS~OH~43017~US~IP~36299'REF~BT~500~GENERAL PURPOSE~CM+3920394930203+AB+12345678900987654321768958473+BT+500'G61~EX~MAGGIE MCGILLICUTTY~TE~(614)555-1212~ADDL CONTACT DESC'MTX~ALL~TEXTUAL DATA~TEXTUAL DATA~DS~622531297~ENG'CB1~07~A'REF~CM~3920394930203~GENERAL PURPOSE~AB+12345678900987654321768958473+BT+500+CM+3920394930203'DTM~021~20080328~1952~PT~MM~DATE TIME PERIOD'LDT~AF~100~WK~20080328'MTX~DOD~TEXTUAL DATA~TEXTUAL DATA~LC~522321826~ENG'ADV~AA~SRV~100.00~150.25~CT9392~SRV~119291.223'DTM~038~20080328~1615~CT~YM~DATE TIME PERIOD'MTX~GEN~TEXTUAL DATA~TEXTUAL DATA~NP~373486709~ENG'PO1~3ALDKF~.500~HB~123.90~LE~AB~CUST12345~BL~ASSEMBLY~ON~BRAND OR LABEL~AB~CUST12345~BL~ASSEMBLY~ON~BRAND OR LABEL~AB~CUST12345~BL~ASSEMBLY~ON~BRAND OR LABEL~AB~CUST12345'LIN~AAA849~BL~ASSEMBLY~ON~BRAND OR LABEL~AB~CUST12345~BL~ASSEMBLY~ON~BRAND OR LABEL~AB~CUST12345~BL~ASSEMBLY~ON~BRAND OR LABEL~AB~CUST12345~BL~ASSEMBLY~ON~BRAND OR LABEL~AB~CUST12345~BL~ASSEMBLY~ON~BRAND OR LABEL~AB~CUST12345'SI~NR~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY'CUR~SE~USA~4.5948~BK~USA~NYC~002~20080328~0718~021~20080328~1952~038~20080328~1615~002~20080328~0718~021~20080328~1952'CN1~04~665.75~.10~12345678900987654321768958473~.25~VERSION IDENTIFIER'PO3~AQ~20080328~MNR~5400.50~RD~123.45~QD~GENERAL PURPOSE'CTP~BR~SLP~100.00~100~DP+1218379213+.29384+HB+1978525058+.05029+QD+2034754308+10.938+DP+231310647+.29384+HB+356545966+.05029~CSR~10.938~100.00~PD~MILES~13'CUR~AC~USA~.2939~SE~USA~IMF~038~20080328~1615~002~20080328~0718~021~20080328~1952~038~20080328~1615~002~20080328~0718'PAM~01~.500~QD+188914096+.29384+DP+1096408465+.05029+HB+107532689+10.938+QD+1963565109+.29384+DP+805733801+.05029~FL~50.00~DA~021~20080328~1952~038~20080328~1615~1~10.25~N'MEA~CO~BE~~HB+1136558184+10.938+QD+992791078+.29384+DP+549292766+.05029+HB+1775671454+10.938+QD+434064727+.29384~50~201.20~03~03~TP~BM'PID~F~10~AX~UNSCENTED~GENERAL PURPOSE~BS~SUBQUALIFIER~N~ENG'MEA~BA~CA~~DP+1991332373+.05029+HB+275506954+10.938+QD+2010887905+.29384+DP+647294122+.05029+HB+2035001580+10.938~11.00~200~07~06~OS~BM'PWK~AA~SN~3~BK~0~9012345918341~GENERAL PURPOSE~1+2+1+2+1~AR'PO4~24~12~QD~PLT37~T~100~DP~100~HB~45~50~123456~QD~21~TP~888394~3ALDKF~826061849'REF~AB~500~GENERAL PURPOSE~BT+3920394930203+CM+12345678900987654321768958473+AB+500'PER~AC~BEVERLY SIMPSON~TE~(614)555-1212~TE~(614)555-1212~TE~(614)555-1212~ADDL CONTACT DESC'SAC~N~A030~AA~ABC60~10000~3~.15~450000~DP~123.45~100~01~3920394930203~PR939201~GENERAL PURPOSE~ENG'CUR~AC~USA~1.259~SE~USA~LNF~002~20080328~0718~021~20080328~1952~038~20080328~1615~002~20080328~0718~021~20080328~1952'CTP~GV~ALT~123.90~.500~HB+950778452+.29384+QD+306018330+.05029+DP+1476388202+10.938+HB+523044528+.29384+QD+504872872+.05029~ILP~10.938~665.75~LE~MILES~14'IT8~F~D~50000~182389281~20080328~NR~B2~BL~BRAND OR LABEL~ON~CUST12345~AB~ASSEMBLY~BL~BRAND OR LABEL~ON~CUST12345~AB~ASSEMBLY~BL~BRAND OR LABEL~ON~CUST12345~AB~ASSEMBLY~BL~BRAND OR LABEL'CSH~W~E~100000~20934801~20080328~AX~D1~X~20.00~1'ITD~12~8~.0010~20080328~90~20080328~30~10000~20080328~50000~.10~GENERAL PURPOSE~15~E~50.75'DIS~CSH~PC~.0434~DAT~50~1000'INC~01~DP+1420683793+.29384+HB+528939340+.05029+QD+259864053+10.938+DP+1522481224+.29384+HB+1646796291+.05029~123.45~100~100.00~NP'TAX~222948392034~IP~02535~IP~36201~IP~36299~IP~02535~IP~36201~2~C'FOB~PB~IP~GENERAL PURPOSE~ZZ~CFR~IP~GENERAL PURPOSE~PP~GENERAL PURPOSE'SDQ~QD~0~111222333~.500~43202~123.45~9012345918341~100~111222333~.500~43202~123.45~9012345918341~100~111222333~.500~43202~123.45~9012345918341~100~111222333~.500~36299'IT3~100~DP~IC~100~GU'DTM~038~20080328~1615~MT~CM~DATE TIME PERIOD'TC2~A~SBEANS'TD1~BAG07~100~B~SBEANS~CUBIC YARD WIDGETS IN VARIOUS~B~50~HB~4000~QD'TD5~I~0~43202~M~ROUTING INFORMATION~AB~IP~02535~SS~WD~9500~AC~NM~ON~US'TD3~LO~IIBL~EQ8373A~A~40~DP~S~04~39483920294'TD4~TSC~U~SN~GENERAL PURPOSE~N'PCT~1~10.25'MAN~SM~MKD29393812910~3939348930IDKDLSIA~GM~III789384839~MKD29393812910'MTX~ALL~TEXTUAL DATA~TEXTUAL DATA~DS~768822358~ENG'SPI~03~BT~12345678900987654321768958473~TITLE OF THE DATA ENTITY~ENTITY PURPOSE~D~12~BL~09~AA~SUBQUALIFIER~100~R~AA~0002'TXI~FT~50.00~20.00~VE~TAX JRSDCT~A~D~450.00~229438383~AAA849'CTB~AA~GENERAL PURPOSE~28~123.45~AC~10000~HB+998406540+10.938+QD+431255710+.29384+DP+441289551+.05029+HB+466532527+10.938+QD+1400482816+.29384'QTY~43~100~DP+2036741237+.05029+HB+1106082774+10.938+QD+4243644+.29384+DP+718140745+.05029+HB+1352697150+10.938'SI~NR~SRV~CUST12345~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345'SCH~.500~QD~BK~ARTHUR JONES~002~20080328~0718~021~20080328~1952~39349382~888394'TD1~BBL94~1234567~C~SBEANS~ONE OUNCE WIDGETS~T~12345678~DP~40~HB'TD5~A~0~9012345918341~A~ROUTING INFORMATION~CO~IP~36201~BS~AA~4230~AC~NM~ON~US'TD3~CR~AAAA~EQ48495~B~50~QD~N~01~30394938483234'TD4~BW~4~AC~GENERAL PURPOSE~N'REF~CM~500~GENERAL PURPOSE~AB+3920394930203+BT+12345678900987654321768958473+CM+500'PKG~F~63~AX~MARKED~GENERAL PURPOSE~05'MEA~AA~A~~DP+671727256+.29384+HB+1271061439+.05029+QD+66417669+10.938+DP+1724927565+.29384+HB+2013578969+.05029~100.00~150.25~01~01~BS~BM'LS~LDT'LDT~AS~123.45~HR~20080328'QTY~01~100~QD+336055940+10.938+DP+266521831+.29384+HB+1035198385+.05029+QD+834701171+10.938+DP+1978710267+.29384'MTX~DOD~TEXTUAL DATA~TEXTUAL DATA~LC~923927488~ENG'REF~AB~3920394930203~GENERAL PURPOSE~BT+12345678900987654321768958473+CM+500+AB+3920394930203'LM~AA~SUBQUALIFIER'LQ~0~INDUSTRY CODE'LE~LDT'N9~BT~12345678900987654321768958473~FREE FORM DESCRIPTION~20080328~1615~PT~CM+500+AB+3920394930203+BT+12345678900987654321768958473'DTM~038~20080328~0718~CT~MM~DATE TIME PERIOD'MEA~CO~BE~500~HB+231671036+.05029+QD+956461241+10.938+DP+53150194+.29384+HB+1238291834+.05029+QD+1245585474+10.938~50~201.20~03~~OS~BM'MTX~GEN~TEXTUAL DATA~TEXTUAL DATA~NP~915706971~ENG'PWK~DR~AE~1~AC~0~111222333~GENERAL PURPOSE~2+1+2+1+2~AR'EFI~02~FREE FORM MESSAGE TEXT~9N~VERSION IDENTIFIER~PROGRAM IDENTIFIER~VERSION IDENTIFIER~INTERCHANGE FORMAT~VERSION IDENTIFIER~COMPRESSION TECHNIQUE~CH~FILE NAME~VAR~22194922111~56~VERSION IDENTIFIER~ASB'N1~SE~MAGGIE MCGILLICUTTY~0~43202~19~BK'N2~BEVERLY SIMPSON~ARTHUR JONES'IN2~05~MAGGIE MCGILLICUTTY~BEVERLY SIMPSON'N3~PO BOX 123~157 WEST 57TH STREET'N4~CLEVELAND~OH~43017~US~IP~36299'QTY~28~.500~DP+1359656823+.29384+HB+1805955795+.05029+QD+462445330+10.938+DP+832324677+.29384+HB+1188372343+.05029'NX2~07~103 NORTH MAIN STREET~23442~01~PO BOX 123'REF~CM~500~GENERAL PURPOSE~AB+3920394930203+BT+12345678900987654321768958473+CM+500'PER~CR~ARTHUR JONES~TE~(614)555-1212~TE~(614)555-1212~TE~(614)555-1212~ADDL CONTACT DESC'SI~NR~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY'DTM~002~20080328~1952~MT~YM~DATE TIME PERIOD'FOB~CA~IP~GENERAL PURPOSE~01~CFR~IP~GENERAL PURPOSE~BY~GENERAL PURPOSE'SCH~123.45~QD~AC~MAGGIE MCGILLICUTTY~021~20080328~1615~038~20080328~0718~3948329~3ALDKF'TD1~PLT37~50~A~SBEANS~FIFTEEN POUND WIDGETS~A~40~DP~400~HB'TD5~B~0~9012345918341~U~ROUTING INFORMATION~IC~IP~02535~SB~HO~7450~AC~NM~ON~US'TD3~HV~AKEI~EQ12349~T~12345678~QD~R~03~394899111098456'TD4~SM~A~PS~GENERAL PURPOSE~N'PKG~F~10~AX~MARKED~GENERAL PURPOSE~01'LDT~AA~100~WK~20080328'MAN~L~3939348930IDKDLSIA~III789384839~SM~MKD29393812910~3939348930IDKDLSIA'QTY~43~.500~DP+897761445+10.938+HB+1023630009+.29384+QD+406805422+.05029+DP+784739074+10.938+HB+57141831+.29384'MTX~ALL~TEXTUAL DATA~TEXTUAL DATA~DS~12361472~ENG'REF~AB~3920394930203~GENERAL PURPOSE~BT+12345678900987654321768958473+CM+500+AB+3920394930203'SLN~AAA849~888394~I~123.45~QD+1695743539+.05029+DP+986341539+10.938+HB+369198664+.29384+QD+1489430458+.05029+DP+1027955653+10.938~5400.50~RD~A~ON~BRAND OR LABEL~AB~CUST12345~BL~ASSEMBLY~ON~BRAND OR LABEL~AB~CUST12345~BL~ASSEMBLY~ON~BRAND OR LABEL~AB~CUST12345~BL~ASSEMBLY~ON~BRAND OR LABEL'MTX~DOD~TEXTUAL DATA~TEXTUAL DATA~LC~215074679~ENG'SI~AA~SRV~CUST12345~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345'PID~F~60~NR~UNSCENTED~GENERAL PURPOSE~TP~SUBQUALIFIER~N~ENG'PO3~QO~20080328~MNR~100.00~PD~100~HB~GENERAL PURPOSE'MEA~BA~CA~~QD+1565385295+.29384+DP+1031794429+.05029+HB+35534619+10.938+QD+1080368033+.29384+DP+608448177+.05029~11.00~200~07~06~BS~BM'TC2~B~SBEANS'ADV~AX~SRV~100.00~150.25~ALUM~SRV~119291.223'DTM~002~20080328~1952~PT~CM~DATE TIME PERIOD'CTP~AG~SLP~123.90~.500~HB+177377951+10.938+QD+705622477+.29384+DP+157474279+.05029+HB+2044043229+10.938+QD+381327151+.29384~CSD~.05029~665.75~LE~MILES~10'PAM~01~123.45~DP+153014333+10.938+HB+984935083+.29384+QD+18121562+.05029+DP+479085608+10.938+HB+1753074567+.29384~FL~100.00~DA~021~20080328~1615~038~20080328~0718~1~50.75~N'PO4~120~24~QD~BAG07~B~400~DP~24~HB~30~100~10~QD~12~OS~3ALDKF~AAA849~647591486'TAX~33939483921~IP~36201~IP~36299~IP~02535~IP~36201~IP~36299~1~C'N9~BT~12345678900987654321768958473~FREE FORM DESCRIPTION~20080328~1952~CT~CM+500+AB+3920394930203+BT+12345678900987654321768958473'DTM~002~20080328~1615~MT~MM~DATE TIME PERIOD'MTX~GEN~TEXTUAL DATA~TEXTUAL DATA~NP~944360826~ENG'SAC~A~A010~AA~AABBCCDDXX~50000~7~.25~10000~DP~100~.500~01~500~19029342ALSL~GENERAL PURPOSE~ENG'CUR~SE~USA~4.5948~BK~USA~NYC~021~20080328~0718~038~20080328~1952~002~20080328~1615~021~20080328~0718~038~20080328~1952'CTP~BR~ALT~5400.50~123.45~HB+969995518+.05029+QD+1714720927+10.938+DP+1329732462+.29384+HB+2085029370+.05029+QD+1303864735+10.938~CSR~.29384~50.00~RD~MILES~13'QTY~28~100~DP+1491226079+.05029+HB+134816300+10.938+QD+730526501+.29384+DP+1403623193+.05029+HB+39596018+10.938'SI~NR~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY'N1~AC~BEVERLY SIMPSON~0~111222333~11~SE'N2~ARTHUR JONES~MAGGIE MCGILLICUTTY'IN2~11~BEVERLY SIMPSON~ARTHUR JONES'N3~157 WEST 57TH STREET~103 NORTH MAIN STREET'N4~CINCINNATI~OH~43017~US~IP~02535'NX2~02~PO BOX 123~54178~07~157 WEST 57TH STREET'REF~CM~3920394930203~GENERAL PURPOSE~AB+12345678900987654321768958473+BT+500+CM+3920394930203'PER~EX~MAGGIE MCGILLICUTTY~TE~(614)555-1212~TE~(614)555-1212~TE~(614)555-1212~ADDL CONTACT DESC'SI~AX~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY~SRV~BRAND OR LABEL'AMT~NP~665.75~D'REF~AB~12345678900987654321768958473~GENERAL PURPOSE~BT+500+CM+3920394930203+AB+12345678900987654321768958473'PCT~1~10.25'LM~AA~SUBQUALIFIER'LQ~0~INDUSTRY CODE'CTT~10~855~50~QD~4000~DP~GENERAL PURPOSE'AMT~AC~100.00~C'SE~207~0001'GE~1~4'IEA~1~000000004'"
+                                    }
+                                }
+                            },
+                            "schemas": {
+                                "input": {
+                                    "input": {
+                                        "type": "json",
+                                        "value": "{\"$schema\":\"http://json-schema.org/draft-06/schema#\",\"type\":\"object\",\"properties\":{\"transaction_id\":{\"type\":\"string\"},\"biz_proc\":{\"type\":\"string\"},\"audit_event\":{\"type\":\"string\"},\"event_desc\":{\"type\":\"string\"},\"event_id\":{\"type\":\"string\"},\"event_timestamp\":{\"type\":\"string\"},\"event_status\":{\"type\":\"string\"},\"event_source\":{\"type\":\"string\"},\"event_destination\":{\"type\":\"string\"},\"extra_props\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"prop_name\":{\"type\":\"string\"},\"prop_value\":{\"type\":\"string\"}}}},\"parent_event_id\":{\"type\":\"string\"},\"payload\":{\"type\":\"string\"}},\"required\":[\"transaction_id\",\"biz_proc\",\"audit_event\",\"event_desc\",\"event_timestamp\",\"event_status\"]}",
+                                        "fe_metadata": "{\"$schema\":\"http://json-schema.org/draft-06/schema#\",\"type\":\"object\",\"properties\":{\"transaction_id\":{\"type\":\"string\"},\"biz_proc\":{\"type\":\"string\"},\"audit_event\":{\"type\":\"string\"},\"event_desc\":{\"type\":\"string\"},\"event_id\":{\"type\":\"string\"},\"event_timestamp\":{\"type\":\"string\"},\"event_status\":{\"type\":\"string\"},\"event_source\":{\"type\":\"string\"},\"event_destination\":{\"type\":\"string\"},\"extra_props\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"prop_name\":{\"type\":\"string\"},\"prop_value\":{\"type\":\"string\"}}}},\"parent_event_id\":{\"type\":\"string\"},\"payload\":{\"type\":\"string\"}},\"required\":[\"transaction_id\",\"biz_proc\",\"audit_event\",\"event_desc\",\"event_timestamp\",\"event_status\"]}"
+                                    }
+                                },
+                                "output": {
+                                    "output": {
+                                        "type": "json",
+                                        "value": "{\"$schema\":\"http://json-schema.org/draft-06/schema#\",\"type\":\"object\",\"properties\":{\"tas_event_id\":{\"type\":\"string\"},\"transaction_id\":{\"type\":\"string\"},\"event_id\":{\"type\":\"string\"}}}",
+                                        "fe_metadata": "{\"$schema\":\"http://json-schema.org/draft-06/schema#\",\"type\":\"object\",\"properties\":{\"tas_event_id\":{\"type\":\"string\"},\"transaction_id\":{\"type\":\"string\"},\"event_id\":{\"type\":\"string\"}}}"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "id": "GetAuditEvent",
+                        "name": "GetAuditEvent",
+                        "description": "Use this activity to get an audit event to TIBCO Cloud(TM) AuditSafe",
+                        "activity": {
+                            "ref": "#query",
+                            "input": {
+                                "Only Get Total Count": false,
+                                "Sort by Column": "audit_event",
+                                "Descending Order": true,
+                                "Exact Match": true,
+                                "Include Event Payload": true,
+                                "Set Return Limit": 1500,
+                                "event_start_timestamp": "2019-02-10T00:00:00Z",
+                                "event_stop_timestamp": "",
+                                "biz_proc": "=array.create(\"Wholesale Order\")",
+                                "transaction_id": "=array.create($activity[Delivery1AuditEvent].output.transaction_id)",
+                                "extra_props": {
+                                    "mapping": [
+                                        {
+                                            "prop_name": "DO Number",
+                                            "prop_value": "D678756745"
+                                        },
+                                        {
+                                            "prop_name": "DO Number",
+                                            "prop_value": "D12343298"
+                                        }
+                                    ]
+                                }
+                            },
+                            "schemas": {
+                                "input": {
+                                    "extra_props": {
+                                        "type": "json",
+                                        "value": "{\"type\": \"array\",\"items\": {\"type\": \"object\",\"properties\": {\"prop_name\": {\"type\": \"string\"},\"prop_value\": { \"type\": \"string\"}}}}",
+                                        "fe_metadata": "{\"type\": \"array\",\"items\": {\"type\": \"object\",\"properties\": {\"prop_name\": {\"type\": \"string\"},\"prop_value\": { \"type\": \"string\"}}}}"
+                                    }
+                                },
+                                "output": {
+                                    "result": {
+                                        "type": "json",
+                                        "value": "{\"type\":\"object\",\"required\":[],\"properties\":{\"totalResults\":{\"type\":\"string\"},\"errorMessage\":{\"type\":\"string\"},\"data\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"required\":[],\"properties\":{\"tas_event_id\":{\"type\":\"string\"},\"event_desc\":{\"type\":\"string\"},\"event_source\":{\"type\":\"string\"},\"event_destination\":{\"type\":\"string\"},\"biz_proc\":{\"type\":\"string\"},\"event_timestamp\":{\"type\":\"string\"},\"transaction_id\":{\"type\":\"string\"},\"event_status\":{\"type\":\"string\"},\"audit_event\":{\"type\":\"string\"},\"event_id\": {\"type\": \"string\"},\"parent_event_id\": {\"type\": \"string\"},\"payload\": {\"type\": \"string\"},\"create_timestamp\": {\"type\": \"string\"}, \"extra_props\":{\"type\": \"array\",\"items\": {\"type\": \"object\",\"properties\": {\"prop_name\": {\"type\": \"string\"},\"prop_value\": {\"type\": \"string\"}}}}}}}}}",
+                                        "fe_metadata": "{\"type\":\"object\",\"required\":[],\"properties\":{\"totalResults\":{\"type\":\"string\"},\"errorMessage\":{\"type\":\"string\"},\"data\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"required\":[],\"properties\":{\"tas_event_id\":{\"type\":\"string\"},\"event_desc\":{\"type\":\"string\"},\"event_source\":{\"type\":\"string\"},\"event_destination\":{\"type\":\"string\"},\"biz_proc\":{\"type\":\"string\"},\"event_timestamp\":{\"type\":\"string\"},\"transaction_id\":{\"type\":\"string\"},\"event_status\":{\"type\":\"string\"},\"audit_event\":{\"type\":\"string\"},\"event_id\": {\"type\": \"string\"},\"parent_event_id\": {\"type\": \"string\"},\"payload\": {\"type\": \"string\"},\"create_timestamp\": {\"type\": \"string\"}, \"extra_props\":{\"type\": \"array\",\"items\": {\"type\": \"object\",\"properties\": {\"prop_name\": {\"type\": \"string\"},\"prop_value\": {\"type\": \"string\"}}}}}}}}}"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "id": "Return",
+                        "name": "Return",
+                        "description": "Simple Return Activity",
+                        "activity": {
+                            "ref": "#actreturn",
+                            "settings": {
+                                "mappings": {
+                                    "data": {
+                                        "mapping": {
+                                            "transaction_id": "=$activity[Delivery1AuditEvent].output.transaction_id",
+                                            "Results": "=$activity[GetAuditEvent].result.totalResults",
+                                            "Data": {
+                                                "@foreach($activity[GetAuditEvent].result.data, Data)": {
+                                                    "=": "$loop"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "id": "DOCreationAuditEvent",
+                        "name": "DOCreationAuditEvent",
+                        "description": "Use this activity to post an audit event to TIBCO Cloud(TM) AuditSafe",
+                        "activity": {
+                            "ref": "#txcreate",
+                            "input": {
+                                "input": {
+                                    "mapping": {
+                                        "biz_proc": "Wholesale Order",
+                                        "audit_event": "DO CREATION",
+                                        "event_desc": "Delivery order 2 is created and sent to Fulfillment Center",
+                                        "event_timestamp": "=datetime.currentDatetime()",
+                                        "event_status": "PENDING",
+                                        "event_source": "Order Management System",
+                                        "event_destination": "Wearhouse Management System",
+                                        "extra_props": [
+                                            {
+                                                "prop_name": "DO Number",
+                                                "prop_value": "D678756745"
+                                            }
+                                        ],
+                                        "parent_event_id": "3",
+                                        "transaction_id": "=$activity[InventoryCheckAuditEvent].output.transaction_id"
+                                    }
+                                }
+                            },
+                            "schemas": {
+                                "input": {
+                                    "input": {
+                                        "type": "json",
+                                        "value": "{\"$schema\":\"http://json-schema.org/draft-06/schema#\",\"type\":\"object\",\"properties\":{\"transaction_id\":{\"type\":\"string\"},\"biz_proc\":{\"type\":\"string\"},\"audit_event\":{\"type\":\"string\"},\"event_desc\":{\"type\":\"string\"},\"event_id\":{\"type\":\"string\"},\"event_timestamp\":{\"type\":\"string\"},\"event_status\":{\"type\":\"string\"},\"event_source\":{\"type\":\"string\"},\"event_destination\":{\"type\":\"string\"},\"extra_props\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"prop_name\":{\"type\":\"string\"},\"prop_value\":{\"type\":\"string\"}}}},\"parent_event_id\":{\"type\":\"string\"},\"payload\":{\"type\":\"string\"}},\"required\":[\"transaction_id\",\"biz_proc\",\"audit_event\",\"event_desc\",\"event_timestamp\",\"event_status\"]}",
+                                        "fe_metadata": "{\"$schema\":\"http://json-schema.org/draft-06/schema#\",\"type\":\"object\",\"properties\":{\"transaction_id\":{\"type\":\"string\"},\"biz_proc\":{\"type\":\"string\"},\"audit_event\":{\"type\":\"string\"},\"event_desc\":{\"type\":\"string\"},\"event_id\":{\"type\":\"string\"},\"event_timestamp\":{\"type\":\"string\"},\"event_status\":{\"type\":\"string\"},\"event_source\":{\"type\":\"string\"},\"event_destination\":{\"type\":\"string\"},\"extra_props\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"prop_name\":{\"type\":\"string\"},\"prop_value\":{\"type\":\"string\"}}}},\"parent_event_id\":{\"type\":\"string\"},\"payload\":{\"type\":\"string\"}},\"required\":[\"transaction_id\",\"biz_proc\",\"audit_event\",\"event_desc\",\"event_timestamp\",\"event_status\"]}"
+                                    }
+                                },
+                                "output": {
+                                    "output": {
+                                        "type": "json",
+                                        "value": "{\"$schema\":\"http://json-schema.org/draft-06/schema#\",\"type\":\"object\",\"properties\":{\"tas_event_id\":{\"type\":\"string\"},\"transaction_id\":{\"type\":\"string\"},\"event_id\":{\"type\":\"string\"}}}",
+                                        "fe_metadata": "{\"$schema\":\"http://json-schema.org/draft-06/schema#\",\"type\":\"object\",\"properties\":{\"tas_event_id\":{\"type\":\"string\"},\"transaction_id\":{\"type\":\"string\"},\"event_id\":{\"type\":\"string\"}}}"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "id": "ShipmentCreationAuditEvent",
+                        "name": "ShipmentCreationAuditEvent",
+                        "description": "Use this activity to post an audit event to TIBCO Cloud(TM) AuditSafe",
+                        "activity": {
+                            "ref": "#txcreate",
+                            "input": {
+                                "input": {
+                                    "mapping": {
+                                        "transaction_id": "=$activity[DOCreationAuditEvent].output.transaction_id",
+                                        "biz_proc": "Wholesale Order",
+                                        "audit_event": "SHIPMENT CREATION",
+                                        "event_desc": "Shipment 2 is built of the packages/ delivery orders",
+                                        "event_timestamp": "=datetime.currentDatetime()",
+                                        "event_status": "PENDING",
+                                        "event_source": "Shipment",
+                                        "extra_props": [
+                                            {
+                                                "prop_name": "DO Number",
+                                                "prop_value": "D678756745"
+                                            }
+                                        ],
+                                        "parent_event_id": "=$activity[DOCreationAuditEvent].output.tas_event_id",
+                                        "payload": "ISA~00~          ~00~          ~01~123456789      ~01~987654321      ~100616~1240~*~00403~000000004~0~P~+'GS~PO~Application Sen~Application Rec~20100616~1240~4~X~005010'ST~850~0001~IMPLEMENTATION CONVENTION REFERENCE'BEG~00~BK~99AKDF9DAL393~39483920193843~20080328~AN3920943~AC~IBM~02~AE~02~BA'CUR~AC~USA~.2939~SE~USA~IMF~002~20080328~1615~021~20080328~0718~038~20080328~1952~002~20080328~1615~021~20080328~0718'REF~AB~3920394930203~GENERAL PURPOSE~BT+12345678900987654321768958473+CM+500+AB+3920394930203'PER~AC~ARTHUR JONES~TE~(614)555-1212~TE~(614)555-1212~TE~(614)555-1212~ADDL CONTACT DESC'TAX~229438383~IP~02535~IP~36201~IP~36299~IP~02535~IP~36201~A~C'FOB~CA~IP~GENERAL PURPOSE~01~CFR~IP~GENERAL PURPOSE~BY~GENERAL PURPOSE'CTP~AG~ALT~100.00~100~DP+1387084417+10.938+HB+1191135548+.29384+QD+151375184+.05029+DP+172447798+10.938+HB+1318029790+.29384~CSD~.05029~100.00~PD~MILES~10'PAM~01~.500~QD+296871275+10.938+DP+2039114794+.29384+HB+173280309+.05029+QD+882799693+10.938+DP+778001999+.29384~AC~50.00~DA~038~20080328~1952~002~20080328~1615~1~10.25~N'CSH~B~A~10000~ACCT0001~20080328~AX~DL~B0~20.00~1'TC2~A~SBEANS'SAC~A~A010~AA~1~50000~1~.25~5000~HB~123.45~100~01~12345678900987654321768958473~PROMO292910~GENERAL PURPOSE~ENG'CUR~BK~USA~1.259~AC~USA~LNF~021~20080328~0718~038~20080328~1952~002~20080328~1615~021~20080328~0718~038~20080328~1952'ITD~01~1~.0035~20080328~60~20080328~10~1000~20080328~10000~.25~GENERAL PURPOSE~1~C~50.75'DIS~AMT~CA~10~DOF~1000~4200'INC~03~QD+618315015+.05029+DP+10220888+10.938+HB+694605289+.29384+QD+287125759+.05029+DP+74889888+10.938~.500~123.45~665.75~FL'DTM~002~20080328~1615~CT~CM~DATE TIME PERIOD'LIN~AAA849~AB~ASSEMBLY~BL~BRAND OR LABEL~ON~CUST12345~AB~ASSEMBLY~BL~BRAND OR LABEL~ON~CUST12345~AB~ASSEMBLY~BL~BRAND OR LABEL~ON~CUST12345~AB~ASSEMBLY~BL~BRAND OR LABEL~ON~CUST12345~AB~ASSEMBLY~BL~BRAND OR LABEL~ON~CUST12345'SI~NR~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY'PID~F~BC~AX~UNSCENTED~GENERAL PURPOSE~BS~SUBQUALIFIER~N~ENG'MEA~AA~A~~HB+1110130411+.29384+QD+227207086+.05029+DP+445812951+10.938+HB+1312172256+.29384+QD+190582094+.05029~11.00~200~01~01~OS~BM'PWK~AA~AE~1~SE~0~9012345918341~GENERAL PURPOSE~1+2+1+2+1~AR'PKG~F~10~AA~MARKED~GENERAL PURPOSE~01'TD1~BAG07~1234567~B~SBEANS~ONE OUNCE WIDGETS~A~12345678~DP~40~HB'TD5~A~0~111222333~A~ROUTING INFORMATION~AB~IP~36299~BS~AA~4230~AC~NM~ON~US'TD3~CR~AAAA~EQ48495~T~50~QD~N~01~30394938483234'TD4~BW~4~AC~GENERAL PURPOSE~N'MAN~GM~III789384839~MKD29393812910~L~3939348930IDKDLSIA~III789384839'PCT~1~10.25'CTB~AA~GENERAL PURPOSE~28~100~NP~100000~DP+145887121+10.938+HB+883971449+.29384+QD+378773390+.05029+DP+471729892+10.938+HB+1212584149+.29384'TXI~ST~100.00~20.00~CD~TAX JRSDCT~1~A~100.00~33939483921~888394'LDT~AA~.500~HR~20080328'QTY~43~123.45~QD+1750213682+.05029+DP+1814061862+10.938+HB+218032469+.29384+QD+2063779234+.05029+DP+975972386+10.938'MTX~ALL~TEXTUAL DATA~TEXTUAL DATA~DS~682048358~ENG'REF~BT~500~GENERAL PURPOSE~CM+3920394930203+AB+12345678900987654321768958473+BT+500'AMT~AC~50.00~C'REF~CM~3920394930203~GENERAL PURPOSE~AB+12345678900987654321768958473+BT+500+CM+3920394930203'DTM~021~20080328~0718~MT~MM~DATE TIME PERIOD'PCT~1~50.75'FA1~NR~A020~C'FA2~01~FINANCIAL INFORMATION CODE'N9~AB~12345678900987654321768958473~FREE FORM DESCRIPTION~20080328~1952~PT~BT+500+CM+3920394930203+AB+12345678900987654321768958473'DTM~038~20080328~1615~CT~YM~DATE TIME PERIOD'MTX~DOD~TEXTUAL DATA~TEXTUAL DATA~LC~293213191~ENG'PWK~BL~BM~2~BK~0~43202~GENERAL PURPOSE~2+1+2+1+2~AR'EFI~03~FREE FORM MESSAGE TEXT~9E~VERSION IDENTIFIER~PROGRAM IDENTIFIER~VERSION IDENTIFIER~INTERCHANGE FORMAT~VERSION IDENTIFIER~COMPRESSION TECHNIQUE~AV~FILE NAME~FIX~322119932~21~VERSION IDENTIFIER~ASB'N1~AC~MAGGIE MCGILLICUTTY~0~9012345918341~11~SE'N2~BEVERLY SIMPSON~ARTHUR JONES'IN2~02~MAGGIE MCGILLICUTTY~BEVERLY SIMPSON'N3~PO BOX 123~157 WEST 57TH STREET'N4~CINCINNATI~OH~43017~US~IP~02535'NX2~01~103 NORTH MAIN STREET~95391~02~PO BOX 123'REF~BT~500~GENERAL PURPOSE~CM+3920394930203+AB+12345678900987654321768958473+BT+500'PER~CR~ARTHUR JONES~TE~(614)555-1212~TE~(614)555-1212~TE~(614)555-1212~ADDL CONTACT DESC'SI~AX~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY~SRV~BRAND OR LABEL'FOB~PA~IP~GENERAL PURPOSE~02~CFR~IP~GENERAL PURPOSE~FE~GENERAL PURPOSE'TD1~BBL94~50~C~SBEANS~FIFTEEN POUND WIDGETS~B~40~HB~400~QD'TD5~B~0~111222333~U~ROUTING INFORMATION~CO~IP~36201~SB~HO~7450~AC~NM~ON~US'TD3~HV~AKEI~EQ12349~A~12345678~DP~R~03~394899111098456'TD4~SM~A~PS~GENERAL PURPOSE~N'PKG~F~37~AA~MARKED~GENERAL PURPOSE~03'LM~NR~SUBQUALIFIER'LQ~0~INDUSTRY CODE'SPI~09~CM~3920394930203~TITLE OF THE DATA ENTITY~ENTITY PURPOSE~A~10~DR~02~AX~SUBQUALIFIER~293212~I~AA~0001'REF~AB~12345678900987654321768958473~GENERAL PURPOSE~BT+500+CM+3920394930203+AB+12345678900987654321768958473'DTM~002~20080328~0718~MT~CM~DATE TIME PERIOD'MTX~GEN~TEXTUAL DATA~TEXTUAL DATA~NP~558215129~ENG'N1~BK~MAGGIE MCGILLICUTTY~0~43202~13~AC'N2~BEVERLY SIMPSON~ARTHUR JONES'N3~157 WEST 57TH STREET~103 NORTH MAIN STREET'N4~COLUMBUS~OH~43017~US~IP~36299'REF~BT~500~GENERAL PURPOSE~CM+3920394930203+AB+12345678900987654321768958473+BT+500'G61~EX~MAGGIE MCGILLICUTTY~TE~(614)555-1212~ADDL CONTACT DESC'MTX~ALL~TEXTUAL DATA~TEXTUAL DATA~DS~622531297~ENG'CB1~07~A'REF~CM~3920394930203~GENERAL PURPOSE~AB+12345678900987654321768958473+BT+500+CM+3920394930203'DTM~021~20080328~1952~PT~MM~DATE TIME PERIOD'LDT~AF~100~WK~20080328'MTX~DOD~TEXTUAL DATA~TEXTUAL DATA~LC~522321826~ENG'ADV~AA~SRV~100.00~150.25~CT9392~SRV~119291.223'DTM~038~20080328~1615~CT~YM~DATE TIME PERIOD'MTX~GEN~TEXTUAL DATA~TEXTUAL DATA~NP~373486709~ENG'PO1~3ALDKF~.500~HB~123.90~LE~AB~CUST12345~BL~ASSEMBLY~ON~BRAND OR LABEL~AB~CUST12345~BL~ASSEMBLY~ON~BRAND OR LABEL~AB~CUST12345~BL~ASSEMBLY~ON~BRAND OR LABEL~AB~CUST12345'LIN~AAA849~BL~ASSEMBLY~ON~BRAND OR LABEL~AB~CUST12345~BL~ASSEMBLY~ON~BRAND OR LABEL~AB~CUST12345~BL~ASSEMBLY~ON~BRAND OR LABEL~AB~CUST12345~BL~ASSEMBLY~ON~BRAND OR LABEL~AB~CUST12345~BL~ASSEMBLY~ON~BRAND OR LABEL~AB~CUST12345'SI~NR~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY'CUR~SE~USA~4.5948~BK~USA~NYC~002~20080328~0718~021~20080328~1952~038~20080328~1615~002~20080328~0718~021~20080328~1952'CN1~04~665.75~.10~12345678900987654321768958473~.25~VERSION IDENTIFIER'PO3~AQ~20080328~MNR~5400.50~RD~123.45~QD~GENERAL PURPOSE'CTP~BR~SLP~100.00~100~DP+1218379213+.29384+HB+1978525058+.05029+QD+2034754308+10.938+DP+231310647+.29384+HB+356545966+.05029~CSR~10.938~100.00~PD~MILES~13'CUR~AC~USA~.2939~SE~USA~IMF~038~20080328~1615~002~20080328~0718~021~20080328~1952~038~20080328~1615~002~20080328~0718'PAM~01~.500~QD+188914096+.29384+DP+1096408465+.05029+HB+107532689+10.938+QD+1963565109+.29384+DP+805733801+.05029~FL~50.00~DA~021~20080328~1952~038~20080328~1615~1~10.25~N'MEA~CO~BE~~HB+1136558184+10.938+QD+992791078+.29384+DP+549292766+.05029+HB+1775671454+10.938+QD+434064727+.29384~50~201.20~03~03~TP~BM'PID~F~10~AX~UNSCENTED~GENERAL PURPOSE~BS~SUBQUALIFIER~N~ENG'MEA~BA~CA~~DP+1991332373+.05029+HB+275506954+10.938+QD+2010887905+.29384+DP+647294122+.05029+HB+2035001580+10.938~11.00~200~07~06~OS~BM'PWK~AA~SN~3~BK~0~9012345918341~GENERAL PURPOSE~1+2+1+2+1~AR'PO4~24~12~QD~PLT37~T~100~DP~100~HB~45~50~123456~QD~21~TP~888394~3ALDKF~826061849'REF~AB~500~GENERAL PURPOSE~BT+3920394930203+CM+12345678900987654321768958473+AB+500'PER~AC~BEVERLY SIMPSON~TE~(614)555-1212~TE~(614)555-1212~TE~(614)555-1212~ADDL CONTACT DESC'SAC~N~A030~AA~ABC60~10000~3~.15~450000~DP~123.45~100~01~3920394930203~PR939201~GENERAL PURPOSE~ENG'CUR~AC~USA~1.259~SE~USA~LNF~002~20080328~0718~021~20080328~1952~038~20080328~1615~002~20080328~0718~021~20080328~1952'CTP~GV~ALT~123.90~.500~HB+950778452+.29384+QD+306018330+.05029+DP+1476388202+10.938+HB+523044528+.29384+QD+504872872+.05029~ILP~10.938~665.75~LE~MILES~14'IT8~F~D~50000~182389281~20080328~NR~B2~BL~BRAND OR LABEL~ON~CUST12345~AB~ASSEMBLY~BL~BRAND OR LABEL~ON~CUST12345~AB~ASSEMBLY~BL~BRAND OR LABEL~ON~CUST12345~AB~ASSEMBLY~BL~BRAND OR LABEL'CSH~W~E~100000~20934801~20080328~AX~D1~X~20.00~1'ITD~12~8~.0010~20080328~90~20080328~30~10000~20080328~50000~.10~GENERAL PURPOSE~15~E~50.75'DIS~CSH~PC~.0434~DAT~50~1000'INC~01~DP+1420683793+.29384+HB+528939340+.05029+QD+259864053+10.938+DP+1522481224+.29384+HB+1646796291+.05029~123.45~100~100.00~NP'TAX~222948392034~IP~02535~IP~36201~IP~36299~IP~02535~IP~36201~2~C'FOB~PB~IP~GENERAL PURPOSE~ZZ~CFR~IP~GENERAL PURPOSE~PP~GENERAL PURPOSE'SDQ~QD~0~111222333~.500~43202~123.45~9012345918341~100~111222333~.500~43202~123.45~9012345918341~100~111222333~.500~43202~123.45~9012345918341~100~111222333~.500~36299'IT3~100~DP~IC~100~GU'DTM~038~20080328~1615~MT~CM~DATE TIME PERIOD'TC2~A~SBEANS'TD1~BAG07~100~B~SBEANS~CUBIC YARD WIDGETS IN VARIOUS~B~50~HB~4000~QD'TD5~I~0~43202~M~ROUTING INFORMATION~AB~IP~02535~SS~WD~9500~AC~NM~ON~US'TD3~LO~IIBL~EQ8373A~A~40~DP~S~04~39483920294'TD4~TSC~U~SN~GENERAL PURPOSE~N'PCT~1~10.25'MAN~SM~MKD29393812910~3939348930IDKDLSIA~GM~III789384839~MKD29393812910'MTX~ALL~TEXTUAL DATA~TEXTUAL DATA~DS~768822358~ENG'SPI~03~BT~12345678900987654321768958473~TITLE OF THE DATA ENTITY~ENTITY PURPOSE~D~12~BL~09~AA~SUBQUALIFIER~100~R~AA~0002'TXI~FT~50.00~20.00~VE~TAX JRSDCT~A~D~450.00~229438383~AAA849'CTB~AA~GENERAL PURPOSE~28~123.45~AC~10000~HB+998406540+10.938+QD+431255710+.29384+DP+441289551+.05029+HB+466532527+10.938+QD+1400482816+.29384'QTY~43~100~DP+2036741237+.05029+HB+1106082774+10.938+QD+4243644+.29384+DP+718140745+.05029+HB+1352697150+10.938'SI~NR~SRV~CUST12345~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345'SCH~.500~QD~BK~ARTHUR JONES~002~20080328~0718~021~20080328~1952~39349382~888394'TD1~BBL94~1234567~C~SBEANS~ONE OUNCE WIDGETS~T~12345678~DP~40~HB'TD5~A~0~9012345918341~A~ROUTING INFORMATION~CO~IP~36201~BS~AA~4230~AC~NM~ON~US'TD3~CR~AAAA~EQ48495~B~50~QD~N~01~30394938483234'TD4~BW~4~AC~GENERAL PURPOSE~N'REF~CM~500~GENERAL PURPOSE~AB+3920394930203+BT+12345678900987654321768958473+CM+500'PKG~F~63~AX~MARKED~GENERAL PURPOSE~05'MEA~AA~A~~DP+671727256+.29384+HB+1271061439+.05029+QD+66417669+10.938+DP+1724927565+.29384+HB+2013578969+.05029~100.00~150.25~01~01~BS~BM'LS~LDT'LDT~AS~123.45~HR~20080328'QTY~01~100~QD+336055940+10.938+DP+266521831+.29384+HB+1035198385+.05029+QD+834701171+10.938+DP+1978710267+.29384'MTX~DOD~TEXTUAL DATA~TEXTUAL DATA~LC~923927488~ENG'REF~AB~3920394930203~GENERAL PURPOSE~BT+12345678900987654321768958473+CM+500+AB+3920394930203'LM~AA~SUBQUALIFIER'LQ~0~INDUSTRY CODE'LE~LDT'N9~BT~12345678900987654321768958473~FREE FORM DESCRIPTION~20080328~1615~PT~CM+500+AB+3920394930203+BT+12345678900987654321768958473'DTM~038~20080328~0718~CT~MM~DATE TIME PERIOD'MEA~CO~BE~500~HB+231671036+.05029+QD+956461241+10.938+DP+53150194+.29384+HB+1238291834+.05029+QD+1245585474+10.938~50~201.20~03~~OS~BM'MTX~GEN~TEXTUAL DATA~TEXTUAL DATA~NP~915706971~ENG'PWK~DR~AE~1~AC~0~111222333~GENERAL PURPOSE~2+1+2+1+2~AR'EFI~02~FREE FORM MESSAGE TEXT~9N~VERSION IDENTIFIER~PROGRAM IDENTIFIER~VERSION IDENTIFIER~INTERCHANGE FORMAT~VERSION IDENTIFIER~COMPRESSION TECHNIQUE~CH~FILE NAME~VAR~22194922111~56~VERSION IDENTIFIER~ASB'N1~SE~MAGGIE MCGILLICUTTY~0~43202~19~BK'N2~BEVERLY SIMPSON~ARTHUR JONES'IN2~05~MAGGIE MCGILLICUTTY~BEVERLY SIMPSON'N3~PO BOX 123~157 WEST 57TH STREET'N4~CLEVELAND~OH~43017~US~IP~36299'QTY~28~.500~DP+1359656823+.29384+HB+1805955795+.05029+QD+462445330+10.938+DP+832324677+.29384+HB+1188372343+.05029'NX2~07~103 NORTH MAIN STREET~23442~01~PO BOX 123'REF~CM~500~GENERAL PURPOSE~AB+3920394930203+BT+12345678900987654321768958473+CM+500'PER~CR~ARTHUR JONES~TE~(614)555-1212~TE~(614)555-1212~TE~(614)555-1212~ADDL CONTACT DESC'SI~NR~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY'DTM~002~20080328~1952~MT~YM~DATE TIME PERIOD'FOB~CA~IP~GENERAL PURPOSE~01~CFR~IP~GENERAL PURPOSE~BY~GENERAL PURPOSE'SCH~123.45~QD~AC~MAGGIE MCGILLICUTTY~021~20080328~1615~038~20080328~0718~3948329~3ALDKF'TD1~PLT37~50~A~SBEANS~FIFTEEN POUND WIDGETS~A~40~DP~400~HB'TD5~B~0~9012345918341~U~ROUTING INFORMATION~IC~IP~02535~SB~HO~7450~AC~NM~ON~US'TD3~HV~AKEI~EQ12349~T~12345678~QD~R~03~394899111098456'TD4~SM~A~PS~GENERAL PURPOSE~N'PKG~F~10~AX~MARKED~GENERAL PURPOSE~01'LDT~AA~100~WK~20080328'MAN~L~3939348930IDKDLSIA~III789384839~SM~MKD29393812910~3939348930IDKDLSIA'QTY~43~.500~DP+897761445+10.938+HB+1023630009+.29384+QD+406805422+.05029+DP+784739074+10.938+HB+57141831+.29384'MTX~ALL~TEXTUAL DATA~TEXTUAL DATA~DS~12361472~ENG'REF~AB~3920394930203~GENERAL PURPOSE~BT+12345678900987654321768958473+CM+500+AB+3920394930203'SLN~AAA849~888394~I~123.45~QD+1695743539+.05029+DP+986341539+10.938+HB+369198664+.29384+QD+1489430458+.05029+DP+1027955653+10.938~5400.50~RD~A~ON~BRAND OR LABEL~AB~CUST12345~BL~ASSEMBLY~ON~BRAND OR LABEL~AB~CUST12345~BL~ASSEMBLY~ON~BRAND OR LABEL~AB~CUST12345~BL~ASSEMBLY~ON~BRAND OR LABEL'MTX~DOD~TEXTUAL DATA~TEXTUAL DATA~LC~215074679~ENG'SI~AA~SRV~CUST12345~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345'PID~F~60~NR~UNSCENTED~GENERAL PURPOSE~TP~SUBQUALIFIER~N~ENG'PO3~QO~20080328~MNR~100.00~PD~100~HB~GENERAL PURPOSE'MEA~BA~CA~~QD+1565385295+.29384+DP+1031794429+.05029+HB+35534619+10.938+QD+1080368033+.29384+DP+608448177+.05029~11.00~200~07~06~BS~BM'TC2~B~SBEANS'ADV~AX~SRV~100.00~150.25~ALUM~SRV~119291.223'DTM~002~20080328~1952~PT~CM~DATE TIME PERIOD'CTP~AG~SLP~123.90~.500~HB+177377951+10.938+QD+705622477+.29384+DP+157474279+.05029+HB+2044043229+10.938+QD+381327151+.29384~CSD~.05029~665.75~LE~MILES~10'PAM~01~123.45~DP+153014333+10.938+HB+984935083+.29384+QD+18121562+.05029+DP+479085608+10.938+HB+1753074567+.29384~FL~100.00~DA~021~20080328~1615~038~20080328~0718~1~50.75~N'PO4~120~24~QD~BAG07~B~400~DP~24~HB~30~100~10~QD~12~OS~3ALDKF~AAA849~647591486'TAX~33939483921~IP~36201~IP~36299~IP~02535~IP~36201~IP~36299~1~C'N9~BT~12345678900987654321768958473~FREE FORM DESCRIPTION~20080328~1952~CT~CM+500+AB+3920394930203+BT+12345678900987654321768958473'DTM~002~20080328~1615~MT~MM~DATE TIME PERIOD'MTX~GEN~TEXTUAL DATA~TEXTUAL DATA~NP~944360826~ENG'SAC~A~A010~AA~AABBCCDDXX~50000~7~.25~10000~DP~100~.500~01~500~19029342ALSL~GENERAL PURPOSE~ENG'CUR~SE~USA~4.5948~BK~USA~NYC~021~20080328~0718~038~20080328~1952~002~20080328~1615~021~20080328~0718~038~20080328~1952'CTP~BR~ALT~5400.50~123.45~HB+969995518+.05029+QD+1714720927+10.938+DP+1329732462+.29384+HB+2085029370+.05029+QD+1303864735+10.938~CSR~.29384~50.00~RD~MILES~13'QTY~28~100~DP+1491226079+.05029+HB+134816300+10.938+QD+730526501+.29384+DP+1403623193+.05029+HB+39596018+10.938'SI~NR~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY'N1~AC~BEVERLY SIMPSON~0~111222333~11~SE'N2~ARTHUR JONES~MAGGIE MCGILLICUTTY'IN2~11~BEVERLY SIMPSON~ARTHUR JONES'N3~157 WEST 57TH STREET~103 NORTH MAIN STREET'N4~CINCINNATI~OH~43017~US~IP~02535'NX2~02~PO BOX 123~54178~07~157 WEST 57TH STREET'REF~CM~3920394930203~GENERAL PURPOSE~AB+12345678900987654321768958473+BT+500+CM+3920394930203'PER~EX~MAGGIE MCGILLICUTTY~TE~(614)555-1212~TE~(614)555-1212~TE~(614)555-1212~ADDL CONTACT DESC'SI~AX~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY~SRV~BRAND OR LABEL~SRV~CUST12345~SRV~ASSEMBLY~SRV~BRAND OR LABEL'AMT~NP~665.75~D'REF~AB~12345678900987654321768958473~GENERAL PURPOSE~BT+500+CM+3920394930203+AB+12345678900987654321768958473'PCT~1~10.25'LM~AA~SUBQUALIFIER'LQ~0~INDUSTRY CODE'CTT~10~855~50~QD~4000~DP~GENERAL PURPOSE'AMT~AC~100.00~C'SE~207~0001'GE~1~4'IEA~1~000000004'"
+                                    }
+                                }
+                            },
+                            "schemas": {
+                                "input": {
+                                    "input": {
+                                        "type": "json",
+                                        "value": "{\"$schema\":\"http://json-schema.org/draft-06/schema#\",\"type\":\"object\",\"properties\":{\"transaction_id\":{\"type\":\"string\"},\"biz_proc\":{\"type\":\"string\"},\"audit_event\":{\"type\":\"string\"},\"event_desc\":{\"type\":\"string\"},\"event_id\":{\"type\":\"string\"},\"event_timestamp\":{\"type\":\"string\"},\"event_status\":{\"type\":\"string\"},\"event_source\":{\"type\":\"string\"},\"event_destination\":{\"type\":\"string\"},\"extra_props\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"prop_name\":{\"type\":\"string\"},\"prop_value\":{\"type\":\"string\"}}}},\"parent_event_id\":{\"type\":\"string\"},\"payload\":{\"type\":\"string\"}},\"required\":[\"transaction_id\",\"biz_proc\",\"audit_event\",\"event_desc\",\"event_timestamp\",\"event_status\"]}",
+                                        "fe_metadata": "{\"$schema\":\"http://json-schema.org/draft-06/schema#\",\"type\":\"object\",\"properties\":{\"transaction_id\":{\"type\":\"string\"},\"biz_proc\":{\"type\":\"string\"},\"audit_event\":{\"type\":\"string\"},\"event_desc\":{\"type\":\"string\"},\"event_id\":{\"type\":\"string\"},\"event_timestamp\":{\"type\":\"string\"},\"event_status\":{\"type\":\"string\"},\"event_source\":{\"type\":\"string\"},\"event_destination\":{\"type\":\"string\"},\"extra_props\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"prop_name\":{\"type\":\"string\"},\"prop_value\":{\"type\":\"string\"}}}},\"parent_event_id\":{\"type\":\"string\"},\"payload\":{\"type\":\"string\"}},\"required\":[\"transaction_id\",\"biz_proc\",\"audit_event\",\"event_desc\",\"event_timestamp\",\"event_status\"]}"
+                                    }
+                                },
+                                "output": {
+                                    "output": {
+                                        "type": "json",
+                                        "value": "{\"$schema\":\"http://json-schema.org/draft-06/schema#\",\"type\":\"object\",\"properties\":{\"tas_event_id\":{\"type\":\"string\"},\"transaction_id\":{\"type\":\"string\"},\"event_id\":{\"type\":\"string\"}}}",
+                                        "fe_metadata": "{\"$schema\":\"http://json-schema.org/draft-06/schema#\",\"type\":\"object\",\"properties\":{\"tas_event_id\":{\"type\":\"string\"},\"transaction_id\":{\"type\":\"string\"},\"event_id\":{\"type\":\"string\"}}}"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "id": "DeliveryAuditEvent",
+                        "name": "DeliveryAuditEvent",
+                        "description": "Use this activity to post an audit event to TIBCO Cloud(TM) AuditSafe",
+                        "activity": {
+                            "ref": "#txcreate",
+                            "input": {
+                                "input": {
+                                    "mapping": {
+                                        "transaction_id": "=$activity[ShipmentCreationAuditEvent].output.transaction_id",
+                                        "parent_event_id": "=$activity[ShipmentCreationAuditEvent].output.tas_event_id",
+                                        "biz_proc": "Wholesale Order",
+                                        "audit_event": "DELIVERY",
+                                        "event_desc": "Shipment 2 is picked by carrier and delivered",
+                                        "event_timestamp": "=datetime.currentDatetime()",
+                                        "event_status": "COMPLETED",
+                                        "extra_props": [
+                                            {
+                                                "prop_name": "DO Number",
+                                                "prop_value": "D678756745"
+                                            }
+                                        ],
+                                        "event_source": "Delivery"
+                                    }
+                                }
+                            },
+                            "schemas": {
+                                "input": {
+                                    "input": {
+                                        "type": "json",
+                                        "value": "{\"$schema\":\"http://json-schema.org/draft-06/schema#\",\"type\":\"object\",\"properties\":{\"transaction_id\":{\"type\":\"string\"},\"biz_proc\":{\"type\":\"string\"},\"audit_event\":{\"type\":\"string\"},\"event_desc\":{\"type\":\"string\"},\"event_id\":{\"type\":\"string\"},\"event_timestamp\":{\"type\":\"string\"},\"event_status\":{\"type\":\"string\"},\"event_source\":{\"type\":\"string\"},\"event_destination\":{\"type\":\"string\"},\"extra_props\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"prop_name\":{\"type\":\"string\"},\"prop_value\":{\"type\":\"string\"}}}},\"parent_event_id\":{\"type\":\"string\"},\"payload\":{\"type\":\"string\"}},\"required\":[\"transaction_id\",\"biz_proc\",\"audit_event\",\"event_desc\",\"event_timestamp\",\"event_status\"]}",
+                                        "fe_metadata": "{\"$schema\":\"http://json-schema.org/draft-06/schema#\",\"type\":\"object\",\"properties\":{\"transaction_id\":{\"type\":\"string\"},\"biz_proc\":{\"type\":\"string\"},\"audit_event\":{\"type\":\"string\"},\"event_desc\":{\"type\":\"string\"},\"event_id\":{\"type\":\"string\"},\"event_timestamp\":{\"type\":\"string\"},\"event_status\":{\"type\":\"string\"},\"event_source\":{\"type\":\"string\"},\"event_destination\":{\"type\":\"string\"},\"extra_props\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"prop_name\":{\"type\":\"string\"},\"prop_value\":{\"type\":\"string\"}}}},\"parent_event_id\":{\"type\":\"string\"},\"payload\":{\"type\":\"string\"}},\"required\":[\"transaction_id\",\"biz_proc\",\"audit_event\",\"event_desc\",\"event_timestamp\",\"event_status\"]}"
+                                    }
+                                },
+                                "output": {
+                                    "output": {
+                                        "type": "json",
+                                        "value": "{\"$schema\":\"http://json-schema.org/draft-06/schema#\",\"type\":\"object\",\"properties\":{\"tas_event_id\":{\"type\":\"string\"},\"transaction_id\":{\"type\":\"string\"},\"event_id\":{\"type\":\"string\"}}}",
+                                        "fe_metadata": "{\"$schema\":\"http://json-schema.org/draft-06/schema#\",\"type\":\"object\",\"properties\":{\"tas_event_id\":{\"type\":\"string\"},\"transaction_id\":{\"type\":\"string\"},\"event_id\":{\"type\":\"string\"}}}"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                ],
+                "metadata": {
+                    "input": [
+                        {
+                            "name": "headers",
+                            "type": "object",
+                            "schema": {
+                                "type": "json",
+                                "value": "{\"Accept\":{\"type\":\"string\",\"visible\":false},\"Accept-Charset\":{\"type\":\"string\",\"visible\":false},\"Accept-Encoding\":{\"type\":\"string\",\"visible\":false},\"Content-Type\":{\"type\":\"string\",\"visible\":false},\"Content-Length\":{\"type\":\"string\",\"visible\":false},\"Connection\":{\"type\":\"string\",\"visible\":false},\"Cookie\":{\"type\":\"string\",\"visible\":false},\"Pragma\":{\"type\":\"string\",\"visible\":false}}"
+                            }
+                        }
+                    ],
+                    "output": [
+                        {
+                            "name": "code",
+                            "type": "integer"
+                        },
+                        {
+                            "name": "data",
+                            "type": "object",
+                            "schema": {
+                                "type": "json",
+                                "value": "{\"transaction_id\":{\"type\":\"string\"},\"Results\":{\"type\":\"string\"},\"Data\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{}}}}"
+                            }
+                        }
+                    ],
+                    "fe_metadata": {
+                        "input": "{\"type\":\"object\",\"title\":\"ReceiveHTTPMessage\",\"properties\":{\"headers\":{\"type\":\"object\",\"properties\":{\"Accept\":{\"type\":\"string\",\"visible\":false},\"Accept-Charset\":{\"type\":\"string\",\"visible\":false},\"Accept-Encoding\":{\"type\":\"string\",\"visible\":false},\"Content-Type\":{\"type\":\"string\",\"visible\":false},\"Content-Length\":{\"type\":\"string\",\"visible\":false},\"Connection\":{\"type\":\"string\",\"visible\":false},\"Cookie\":{\"type\":\"string\",\"visible\":false},\"Pragma\":{\"type\":\"string\",\"visible\":false}},\"required\":[]}}}",
+                        "output": "{\"type\":\"object\",\"title\":\"Inputs\",\"properties\":{\"code\":{\"type\":\"integer\",\"required\":false},\"data\":{\"$schema\":\"http://json-schema.org/draft-04/schema#\",\"type\":\"object\",\"properties\":{\"transaction_id\":{\"type\":\"string\"},\"Results\":{\"type\":\"string\"},\"Data\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{}}}}}},\"required\":[]}"
+                    }
+                },
+                "explicitReply": true
+            }
+        }
+    ],
+    "properties": [],
+    "connections": {},
+    "contrib": "W3sicmVmIjoiZ2l0LnRpYmNvLmNvbS9naXQvcHJvZHVjdC9pcGFhcy93aS1jb250cmliLmdpdC9jb250cmlidXRpb25zL0dlbmVyYWwiLCJzM2xvY2F0aW9uIjoiVGliY28vR2VuZXJhbCJ9LHsicmVmIjoiZ2l0LnRpYmNvLmNvbS9naXQvcHJvZHVjdC9pcGFhcy93aS10Y3RhLmdpdC9zcmMvYXBwL0F1ZGl0U2FmZSIsInMzbG9jYXRpb24iOiJUaWJjby9BdWRpdFNhZmUifV0=",
+    "fe_metadata": "UEsDBAoAAAAIAMZLKlGrqSRGFQAAABMAAAAIAAAAYXBwLmpzb26rViopykxPTy1yy8kvL1ayio6tBQBQSwECFAAKAAAACADGSypRq6kkRhUAAAATAAAACAAAAAAAAAAAAAAAAAAAAAAAYXBwLmpzb25QSwUGAAAAAAEAAQA2AAAAOwAAAAAA"
+}

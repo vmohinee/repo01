@@ -1,0 +1,216 @@
+{
+    "imports": [
+        "github.com/project-flogo/flow",
+        "git.tibco.com/git/product/ipaas/wi-tcta.git/src/app/AuditSafe/activity/query",
+        "github.com/project-flogo/contrib/activity/actreturn",
+        "git.tibco.com/git/product/ipaas/wi-contrib.git/contributions/General/trigger/rest",
+        "github.com/project-flogo/contrib/function/array"
+    ],
+    "name": "New_Flogo_App_13",
+    "description": "",
+    "version": "1.0.0",
+    "type": "flogo:app",
+    "appModel": "1.1.1",
+    "tags": [],
+    "triggers": [
+        {
+            "ref": "#rest",
+            "name": "tibco-wi-rest",
+            "description": "Simple REST Trigger",
+            "settings": {
+                "port": 9999,
+                "APISpecUpdate": false,
+                "swagger": "",
+                "swaggerVersion": "v2",
+                "secureConnection": false,
+                "serverKey": "",
+                "caCertificate": ""
+            },
+            "id": "ReceiveHTTPMessage",
+            "handlers": [
+                {
+                    "description": "",
+                    "settings": {
+                        "Method": "POST",
+                        "Path": "/get",
+                        "OutputValidation": false
+                    },
+                    "action": {
+                        "ref": "github.com/project-flogo/flow",
+                        "settings": {
+                            "flowURI": "res://flow:flowpost"
+                        },
+                        "input": {
+                            "headers": {
+                                "mapping": {
+                                    "Content-Length": "=$.headers[\"Content-Length\"]"
+                                }
+                            }
+                        },
+                        "output": {
+                            "data": {
+                                "mapping": {
+                                    "Data": {
+                                        "@foreach($.Data, Data)": {
+                                            "=": "$loop"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "reply": {
+                        "code": 200,
+                        "configureResponseCodes": false,
+                        "message": {}
+                    },
+                    "schemas": {
+                        "reply": {
+                            "data": {
+                                "type": "json",
+                                "value": "{\"$schema\":\"http://json-schema.org/draft-04/schema#\",\"type\":\"object\",\"properties\":{\"Results\":{\"type\":\"string\"},\"Data\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{}}}}}",
+                                "fe_metadata": "{\n    \"Results\":\"String\",\n    \"Data\":[{}]\n}"
+                            },
+                            "responseBody": {
+                                "type": "json",
+                                "value": "{\"type\":\"object\",\"properties\":{\"body\":{\"type\":\"any\"},\"headers\":{\"type\":\"object\"}}}",
+                                "fe_metadata": "{\"type\":\"object\",\"properties\":{\"body\":{\"type\":\"any\"},\"headers\":{\"type\":\"object\"}}}"
+                            }
+                        },
+                        "output": {
+                            "headers": {
+                                "type": "json",
+                                "value": "{\"type\":\"object\",\"properties\":{\"Accept\":{\"type\":\"string\",\"visible\":false},\"Accept-Charset\":{\"type\":\"string\",\"visible\":false},\"Accept-Encoding\":{\"type\":\"string\",\"visible\":false},\"Content-Type\":{\"type\":\"string\",\"visible\":false},\"Content-Length\":{\"type\":\"string\",\"visible\":false},\"Connection\":{\"type\":\"string\",\"visible\":false},\"Cookie\":{\"type\":\"string\",\"visible\":false},\"Pragma\":{\"type\":\"string\",\"visible\":false}},\"required\":[]}",
+                                "fe_metadata": "[{\"parameterName\":\"Accept\",\"type\":\"string\",\"repeating\":\"false\",\"required\":\"false\",\"visible\":false},{\"parameterName\":\"Accept-Charset\",\"type\":\"string\",\"repeating\":\"false\",\"required\":\"false\",\"visible\":false},{\"parameterName\":\"Accept-Encoding\",\"type\":\"string\",\"repeating\":\"false\",\"required\":\"false\",\"visible\":false},{\"parameterName\":\"Content-Type\",\"type\":\"string\",\"repeating\":\"false\",\"required\":\"false\",\"visible\":false},{\"parameterName\":\"Content-Length\",\"type\":\"string\",\"repeating\":\"false\",\"required\":\"false\",\"visible\":false},{\"parameterName\":\"Connection\",\"type\":\"string\",\"repeating\":\"false\",\"required\":\"false\",\"visible\":false},{\"parameterName\":\"Cookie\",\"type\":\"string\",\"repeating\":\"false\",\"required\":\"false\",\"visible\":false},{\"parameterName\":\"Pragma\",\"type\":\"string\",\"repeating\":\"false\",\"required\":\"false\",\"visible\":false}]"
+                            }
+                        }
+                    },
+                    "name": "flowpost"
+                }
+            ]
+        }
+    ],
+    "resources": [
+        {
+            "id": "flow:flowpost",
+            "data": {
+                "name": "flowpost",
+                "description": "",
+                "links": [
+                    {
+                        "id": 1,
+                        "from": "GetAuditEvent",
+                        "to": "Return",
+                        "type": "default"
+                    }
+                ],
+                "tasks": [
+                    {
+                        "id": "GetAuditEvent",
+                        "name": "GetAuditEvent",
+                        "description": "Use this activity to get an audit event to TIBCO Cloud(TM) AuditSafe",
+                        "activity": {
+                            "ref": "#query",
+                            "input": {
+                                "Only Get Total Count": false,
+                                "Sort by Column": "",
+                                "Descending Order": false,
+                                "Exact Match": false,
+                                "Include Event Payload": true,
+                                "Set Return Limit": 0,
+                                "event_start_timestamp": "",
+                                "event_stop_timestamp": "",
+                                "extra_props": {
+                                    "mapping": [
+                                        {
+                                            "prop_name": "DO Number",
+                                            "prop_value": "D678756745"
+                                        },
+                                        {
+                                            "prop_name": "DO Number",
+                                            "prop_value": "D12343298"
+                                        }
+                                    ]
+                                }
+                            },
+                            "schemas": {
+                                "input": {
+                                    "extra_props": {
+                                        "type": "json",
+                                        "value": "{\"type\": \"array\",\"items\": {\"type\": \"object\",\"properties\": {\"prop_name\": {\"type\": \"string\"},\"prop_value\": { \"type\": \"string\"}}}}",
+                                        "fe_metadata": "{\"type\": \"array\",\"items\": {\"type\": \"object\",\"properties\": {\"prop_name\": {\"type\": \"string\"},\"prop_value\": { \"type\": \"string\"}}}}"
+                                    }
+                                },
+                                "output": {
+                                    "result": {
+                                        "type": "json",
+                                        "value": "{\"type\":\"object\",\"required\":[],\"properties\":{\"totalResults\":{\"type\":\"string\"},\"errorMessage\":{\"type\":\"string\"},\"data\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"required\":[],\"properties\":{\"tas_event_id\":{\"type\":\"string\"},\"event_desc\":{\"type\":\"string\"},\"event_source\":{\"type\":\"string\"},\"event_destination\":{\"type\":\"string\"},\"biz_proc\":{\"type\":\"string\"},\"event_timestamp\":{\"type\":\"string\"},\"transaction_id\":{\"type\":\"string\"},\"event_status\":{\"type\":\"string\"},\"audit_event\":{\"type\":\"string\"},\"event_id\": {\"type\": \"string\"},\"parent_event_id\": {\"type\": \"string\"},\"payload\": {\"type\": \"string\"},\"create_timestamp\": {\"type\": \"string\"}, \"extra_props\":{\"type\": \"array\",\"items\": {\"type\": \"object\",\"properties\": {\"prop_name\": {\"type\": \"string\"},\"prop_value\": {\"type\": \"string\"}}}}}}}}}",
+                                        "fe_metadata": "{\"type\":\"object\",\"required\":[],\"properties\":{\"totalResults\":{\"type\":\"string\"},\"errorMessage\":{\"type\":\"string\"},\"data\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"required\":[],\"properties\":{\"tas_event_id\":{\"type\":\"string\"},\"event_desc\":{\"type\":\"string\"},\"event_source\":{\"type\":\"string\"},\"event_destination\":{\"type\":\"string\"},\"biz_proc\":{\"type\":\"string\"},\"event_timestamp\":{\"type\":\"string\"},\"transaction_id\":{\"type\":\"string\"},\"event_status\":{\"type\":\"string\"},\"audit_event\":{\"type\":\"string\"},\"event_id\": {\"type\": \"string\"},\"parent_event_id\": {\"type\": \"string\"},\"payload\": {\"type\": \"string\"},\"create_timestamp\": {\"type\": \"string\"}, \"extra_props\":{\"type\": \"array\",\"items\": {\"type\": \"object\",\"properties\": {\"prop_name\": {\"type\": \"string\"},\"prop_value\": {\"type\": \"string\"}}}}}}}}}"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "id": "Return",
+                        "name": "Return",
+                        "description": "Simple Return Activity",
+                        "activity": {
+                            "ref": "#actreturn",
+                            "settings": {
+                                "mappings": {
+                                    "Data": {
+                                        "mapping": {
+                                            "@foreach($activity[GetAuditEvent].result.data, Data)": {
+                                                "=": "$loop"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                ],
+                "metadata": {
+                    "input": [
+                        {
+                            "name": "headers",
+                            "type": "object",
+                            "schema": {
+                                "type": "json",
+                                "value": "{\"Accept\":{\"type\":\"string\",\"visible\":false},\"Accept-Charset\":{\"type\":\"string\",\"visible\":false},\"Accept-Encoding\":{\"type\":\"string\",\"visible\":false},\"Content-Type\":{\"type\":\"string\",\"visible\":false},\"Content-Length\":{\"type\":\"string\",\"visible\":false},\"Connection\":{\"type\":\"string\",\"visible\":false},\"Cookie\":{\"type\":\"string\",\"visible\":false},\"Pragma\":{\"type\":\"string\",\"visible\":false}}"
+                            }
+                        }
+                    ],
+                    "output": [
+                        {
+                            "name": "code",
+                            "type": "integer"
+                        },
+                        {
+                            "name": "Results",
+                            "type": "string"
+                        },
+                        {
+                            "name": "Data",
+                            "type": "array",
+                            "schema": {
+                                "type": "json",
+                                "value": "{\"type\":\"object\",\"properties\":{}}"
+                            }
+                        }
+                    ],
+                    "fe_metadata": {
+                        "input": "{\"type\":\"object\",\"title\":\"ReceiveHTTPMessage\",\"properties\":{\"headers\":{\"type\":\"object\",\"properties\":{\"Accept\":{\"type\":\"string\",\"visible\":false},\"Accept-Charset\":{\"type\":\"string\",\"visible\":false},\"Accept-Encoding\":{\"type\":\"string\",\"visible\":false},\"Content-Type\":{\"type\":\"string\",\"visible\":false},\"Content-Length\":{\"type\":\"string\",\"visible\":false},\"Connection\":{\"type\":\"string\",\"visible\":false},\"Cookie\":{\"type\":\"string\",\"visible\":false},\"Pragma\":{\"type\":\"string\",\"visible\":false}},\"required\":[]}}}",
+                        "output": "{\"type\":\"object\",\"title\":\"Inputs\",\"properties\":{\"code\":{\"type\":\"integer\",\"required\":false},\"Results\":{\"type\":\"string\",\"required\":false},\"Data\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{}}}},\"required\":[]}"
+                    }
+                },
+                "explicitReply": true
+            }
+        }
+    ],
+    "properties": [],
+    "connections": {},
+    "contrib": "W3sicmVmIjoiZ2l0LnRpYmNvLmNvbS9naXQvcHJvZHVjdC9pcGFhcy93aS1jb250cmliLmdpdC9jb250cmlidXRpb25zL0dlbmVyYWwiLCJzM2xvY2F0aW9uIjoiVGliY28vR2VuZXJhbCJ9LHsicmVmIjoiZ2l0LnRpYmNvLmNvbS9naXQvcHJvZHVjdC9pcGFhcy93aS10Y3RhLmdpdC9zcmMvYXBwL0F1ZGl0U2FmZSIsInMzbG9jYXRpb24iOiJUaWJjby9BdWRpdFNhZmUifV0=",
+    "fe_metadata": "UEsDBAoAAAAIAGZPSVKrqSRGFQAAABMAAAAIAAAAYXBwLmpzb26rViopykxPTy1yy8kvL1ayio6tBQBQSwECFAAKAAAACABmT0lSq6kkRhUAAAATAAAACAAAAAAAAAAAAAAAAAAAAAAAYXBwLmpzb25QSwUGAAAAAAEAAQA2AAAAOwAAAAAA"
+}

@@ -1,0 +1,3 @@
+https://account.tenant-integration.tcie.pro/manage/team/organization%page=1
+https://account.tenant-integration.tcie.pro/manage/team/organization@page=1
+https://account.tenant-integration.tcie.pro/manage/team/organization?page=%E2%80%9D/%3E&lt;script%3Ealert(1)&lt;/script&gt%E2%80%9D/%3E

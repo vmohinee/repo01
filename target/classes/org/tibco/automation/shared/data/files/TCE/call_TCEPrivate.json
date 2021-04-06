@@ -1,0 +1,251 @@
+{
+    "imports": [
+        "github.com/project-flogo/flow",
+        "git.tibco.com/git/product/ipaas/wi-contrib.git/contributions/General/activity/rest",
+        "github.com/project-flogo/contrib/activity/actreturn",
+        "rest_1 git.tibco.com/git/product/ipaas/wi-contrib.git/contributions/General/trigger/rest",
+        "git.tibco.com/git/product/ipaas/wi-contrib.git/function/utility"
+    ],
+    "name": "call_TCEPrivate",
+    "description": "",
+    "version": "1.0.0",
+    "type": "flogo:app",
+    "appModel": "1.1.1",
+    "tags": [],
+    "triggers": [
+        {
+            "ref": "#rest_1",
+            "name": "tibco-wi-rest",
+            "description": "Simple REST Trigger",
+            "settings": {
+                "port": 9999,
+                "APISpecUpdate": false,
+                "swagger": "",
+                "swaggerVersion": "v2",
+                "secureConnection": false,
+                "serverKey": "",
+                "caCertificate": ""
+            },
+            "id": "ReceiveHTTPMessage",
+            "handlers": [
+                {
+                    "description": "",
+                    "settings": {
+                        "Method": "GET",
+                        "Path": "/get",
+                        "OutputValidation": false
+                    },
+                    "action": {
+                        "ref": "github.com/project-flogo/flow",
+                        "settings": {
+                            "flowURI": "res://flow:flow"
+                        },
+                        "output": {
+                            "data": {
+                                "mapping": {
+                                    "msg": "=$.data.msg"
+                                }
+                            }
+                        }
+                    },
+                    "reply": {
+                        "code": 200,
+                        "configureResponseCodes": false,
+                        "message": {}
+                    },
+                    "schemas": {
+                        "reply": {
+                            "data": {
+                                "type": "json",
+                                "value": "{\"$schema\":\"http://json-schema.org/draft-04/schema#\",\"type\":\"object\",\"properties\":{\"msg\":{\"type\":\"string\"}}}",
+                                "fe_metadata": "{\n    \"msg\":\"test\"\n}"
+                            },
+                            "responseBody": {
+                                "type": "json",
+                                "value": "{\"type\":\"object\",\"properties\":{\"body\":{\"type\":\"any\"},\"headers\":{\"type\":\"object\"}}}",
+                                "fe_metadata": "{\"type\":\"object\",\"properties\":{\"body\":{\"type\":\"any\"},\"headers\":{\"type\":\"object\"}}}"
+                            }
+                        },
+                        "output": {
+                            "headers": {
+                                "type": "json",
+                                "value": "{\"type\":\"object\",\"properties\":{\"Accept\":{\"type\":\"string\",\"visible\":false},\"Accept-Charset\":{\"type\":\"string\",\"visible\":false},\"Accept-Encoding\":{\"type\":\"string\",\"visible\":false},\"Content-Type\":{\"type\":\"string\",\"visible\":false},\"Content-Length\":{\"type\":\"string\",\"visible\":false},\"Connection\":{\"type\":\"string\",\"visible\":false},\"Cookie\":{\"type\":\"string\",\"visible\":false},\"Pragma\":{\"type\":\"string\",\"visible\":false}},\"required\":[]}",
+                                "fe_metadata": "[{\"parameterName\":\"Accept\",\"type\":\"string\",\"repeating\":\"false\",\"required\":\"false\",\"visible\":false},{\"parameterName\":\"Accept-Charset\",\"type\":\"string\",\"repeating\":\"false\",\"required\":\"false\",\"visible\":false},{\"parameterName\":\"Accept-Encoding\",\"type\":\"string\",\"repeating\":\"false\",\"required\":\"false\",\"visible\":false},{\"parameterName\":\"Content-Type\",\"type\":\"string\",\"repeating\":\"false\",\"required\":\"false\",\"visible\":false},{\"parameterName\":\"Content-Length\",\"type\":\"string\",\"repeating\":\"false\",\"required\":\"false\",\"visible\":false},{\"parameterName\":\"Connection\",\"type\":\"string\",\"repeating\":\"false\",\"required\":\"false\",\"visible\":false},{\"parameterName\":\"Cookie\",\"type\":\"string\",\"repeating\":\"false\",\"required\":\"false\",\"visible\":false},{\"parameterName\":\"Pragma\",\"type\":\"string\",\"repeating\":\"false\",\"required\":\"false\",\"visible\":false}]"
+                            }
+                        }
+                    },
+                    "name": "flow"
+                }
+            ]
+        }
+    ],
+    "resources": [
+        {
+            "id": "flow:flow",
+            "data": {
+                "name": "flow",
+                "description": "",
+                "links": [
+                    {
+                        "id": 1,
+                        "from": "InvokeRESTService",
+                        "to": "Return",
+                        "type": "default"
+                    }
+                ],
+                "tasks": [
+                    {
+                        "id": "InvokeRESTService",
+                        "name": "InvokeRESTService",
+                        "description": "Simple REST Activity",
+                        "settings": {
+                            "retryOnError": {
+                                "count": 0,
+                                "interval": 0
+                            }
+                        },
+                        "activity": {
+                            "ref": "#rest",
+                            "input": {
+                                "enableASR": true,
+                                "swagger": "",
+                                "authorization": false,
+                                "authorizationConn": "",
+                                "serviceName": "tceeu-b4828d55-d2a4-485d-b473-59707fc3f7ce",
+                                "resourcePath": "/Channels/HTTPChannel/setInfo",
+                                "Method": "POST",
+                                "Uri": "/gsbc/01EVGFCP5EPPXR36383X6TYNQJ/tceuserapp/shared/b4828d55-d2a4-485d-b473-59707fc3f7ce",
+                                "Timeout": 0,
+                                "requestType": "application/json",
+                                "Use certificate for verification": false,
+                                "Server Certificate": "",
+                                "proxy": "",
+                                "host": "",
+                                "body": {
+                                    "mapping": {
+                                        "properties": {
+                                            "Employee": {
+                                                "Employee": {
+                                                    "attributes": {
+                                                        "Id": 58,
+                                                        "type": "www.tibco.com/be/ontology/Concepts/Employee"
+                                                    },
+                                                    "Emp_Id": "EMP_07",
+                                                    "Name": "test07",
+                                                    "Salary": 17.7
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "output": {
+                                "configureResponseCodes": true,
+                                "responseType": "application/json",
+                                "responseOutput": "JSON Object"
+                            },
+                            "schemas": {
+                                "input": {
+                                    "serviceMetadata": {
+                                        "type": "json",
+                                        "value": "{\"$schema\":\"http://json-schema.org/draft-04/schema#\",\"type\":\"object\",\"properties\":{\"serviceId\":{\"type\":\"string\"},\"title\":{\"type\":\"string\"},\"swaggerChecksum\":{\"type\":\"string\"},\"description\":{\"type\":\"string\"},\"assurance\":{\"type\":\"string\"},\"intercom\":{\"type\":\"boolean\"},\"intercomRegion\":{\"type\":\"string\"},\"extAuthz\":{\"type\":\"array\",\"items\":{}},\"path\":{\"type\":\"string\"},\"baseURL\":{\"type\":\"string\"},\"apiSpec\":{\"type\":\"object\",\"properties\":{\"swagger\":{\"type\":\"string\"},\"info\":{\"type\":\"object\",\"properties\":{\"description\":{\"type\":\"string\"},\"version\":{\"type\":\"string\"},\"title\":{\"type\":\"string\"}}},\"host\":{\"type\":\"string\"},\"basePath\":{\"type\":\"string\"},\"tags\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"name\":{\"type\":\"string\"},\"description\":{\"type\":\"string\"}}}},\"schemes\":{\"type\":\"array\",\"items\":{\"type\":\"string\"}},\"paths\":{\"type\":\"object\",\"properties\":{\"/Channels/HTTPChannel/setInfo\":{\"type\":\"object\",\"properties\":{\"post\":{\"type\":\"object\",\"properties\":{\"tags\":{\"type\":\"array\",\"items\":{\"type\":\"string\"}},\"summary\":{\"type\":\"string\"},\"operationId\":{\"type\":\"string\"},\"consumes\":{\"type\":\"array\",\"items\":{\"type\":\"string\"}},\"produces\":{\"type\":\"array\",\"items\":{\"type\":\"string\"}},\"parameters\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"in\":{\"type\":\"string\"},\"name\":{\"type\":\"string\"},\"type\":{\"type\":\"string\"},\"description\":{\"type\":\"string\"},\"schema\":{\"type\":\"object\",\"properties\":{\"properties\":{\"type\":\"object\",\"properties\":{\"Employee\":{\"type\":\"object\",\"properties\":{\"type\":{\"type\":\"string\"},\"required\":{\"type\":\"array\",\"items\":{\"type\":\"string\"}},\"properties\":{\"type\":\"object\",\"properties\":{\"Emp_Id\":{\"type\":\"object\",\"properties\":{\"type\":{\"type\":\"string\"}}},\"Name\":{\"type\":\"object\",\"properties\":{\"type\":{\"type\":\"string\"}}},\"Salary\":{\"type\":\"object\",\"properties\":{\"type\":{\"type\":\"string\"}}}}},\"example\":{\"type\":\"object\",\"properties\":{\"Emp_Id\":{\"type\":\"string\"},\"Name\":{\"type\":\"string\"},\"Salary\":{\"type\":\"number\"}}}}}}}}}},\"required\":[\"in\",\"name\",\"type\"]}},\"responses\":{\"type\":\"object\",\"properties\":{\"200\":{\"type\":\"object\",\"properties\":{\"description\":{\"type\":\"string\"}}},\"400\":{\"type\":\"object\",\"properties\":{\"description\":{\"type\":\"string\"}}}}}}}}}}},\"definitions\":{\"type\":\"object\",\"properties\":{}}}}}}",
+                                        "fe_metadata": "{\"serviceId\":\"tceeu-b4828d55-d2a4-485d-b473-59707fc3f7ce\",\"title\":\"BEJSONServer\",\"swaggerChecksum\":\"c43be9d3ba18e8e5e1fed8ef8aa4991b934e10dd3604966ca2b199f2bf3e60b4\",\"description\":\"<p>This example demonstrates how to use TIBCO Cloud&trade; Events to send and receive JSON content via TIBCO Cloud Events.</p>\",\"assurance\":\"published\",\"intercom\":true,\"intercomRegion\":\"eu-west-1\",\"extAuthz\":[],\"path\":\"/gsbc/01EVGFCP5EPPXR36383X6TYNQJ/tceuserapp/shared/b4828d55-d2a4-485d-b473-59707fc3f7ce\",\"baseURL\":\"https://events.iqa-pune.eu-west-1.tibcoapps.net\",\"apiSpec\":{\"swagger\":\"2.0\",\"info\":{\"description\":\"<p>This example demonstrates how to use TIBCO Cloud&trade; Events to send and receive JSON content via TIBCO Cloud Events.</p>\",\"version\":\"2.1.1\",\"title\":\"BEJSONServer\"},\"host\":\"events.iqa-pune.eu-west-1.tibcoapps.net\",\"basePath\":\"/gsbc/01EVGFCP5EPPXR36383X6TYNQJ/tceuserapp/shared/b4828d55-d2a4-485d-b473-59707fc3f7ce\",\"tags\":[{\"name\":\"/Channels/HTTPChannel\",\"description\":\"\"}],\"schemes\":[\"https\",\"http\"],\"paths\":{\"/Channels/HTTPChannel/setInfo\":{\"post\":{\"tags\":[\"/Channels/HTTPChannel\"],\"summary\":\"Set employee information\",\"operationId\":\"Channels_HTTPChannel_setInfo\",\"consumes\":[\"application/json\"],\"produces\":[\"application/json\"],\"parameters\":[{\"in\":\"query\",\"name\":\"_extId_\",\"type\":\"string\"},{\"in\":\"query\",\"name\":\"_ns_\",\"type\":\"string\"},{\"in\":\"query\",\"name\":\"_nm_\",\"type\":\"string\"},{\"in\":\"body\",\"name\":\"body\",\"description\":\"The employee to json to create.\",\"schema\":{\"properties\":{\"Employee\":{\"type\":\"object\",\"required\":[\"Emp_Id\",\"Name\",\"Salary\"],\"properties\":{\"Emp_Id\":{\"type\":\"string\"},\"Name\":{\"type\":\"string\"},\"Salary\":{\"type\":\"number\"}},\"example\":{\"Emp_Id\":\"EMP_101\",\"Name\":\"John\",\"Salary\":500}}}}}],\"responses\":{\"200\":{\"description\":\"200 success\"},\"400\":{\"description\":\"400 Bad Request\"}}}}},\"definitions\":{}}}"
+                                    },
+                                    "queryParams": {
+                                        "type": "json",
+                                        "value": "{\"type\":\"object\",\"properties\":{\"_extId_\":{\"type\":\"string\"},\"_ns_\":{\"type\":\"string\"},\"_nm_\":{\"type\":\"string\"}},\"required\":[]}",
+                                        "fe_metadata": "[{\"parameterName\":\"_extId_\",\"repeating\":\"false\",\"type\":\"string\",\"required\":\"false\"},{\"parameterName\":\"_ns_\",\"repeating\":\"false\",\"type\":\"string\",\"required\":\"false\"},{\"parameterName\":\"_nm_\",\"repeating\":\"false\",\"type\":\"string\",\"required\":\"false\"}]"
+                                    },
+                                    "pathParams": {
+                                        "type": "json",
+                                        "value": "{\"type\":\"object\",\"properties\":{}}",
+                                        "fe_metadata": "[]"
+                                    },
+                                    "headers": {
+                                        "type": "json",
+                                        "value": "{\"type\":\"object\",\"properties\":{}}",
+                                        "fe_metadata": "[]"
+                                    },
+                                    "body": {
+                                        "type": "json",
+                                        "value": "{\"$schema\":\"http://json-schema.org/draft-04/schema#\",\"type\":\"object\",\"properties\":{\"properties\":{\"type\":\"object\",\"properties\":{\"Employee\":{\"type\":\"object\",\"properties\":{\"type\":{\"type\":\"string\"},\"required\":{\"type\":\"array\",\"items\":{\"type\":\"string\"}},\"properties\":{\"type\":\"object\",\"properties\":{\"Emp_Id\":{\"type\":\"object\",\"properties\":{\"type\":{\"type\":\"string\"}}},\"Name\":{\"type\":\"object\",\"properties\":{\"type\":{\"type\":\"string\"}}},\"Salary\":{\"type\":\"object\",\"properties\":{\"type\":{\"type\":\"string\"}}}}},\"example\":{\"type\":\"object\",\"properties\":{\"Emp_Id\":{\"type\":\"string\"},\"Name\":{\"type\":\"string\"},\"Salary\":{\"type\":\"number\"}}}}}}}}}",
+                                        "fe_metadata": "{\"properties\":{\"Employee\":{\"type\":\"object\",\"required\":[\"Emp_Id\",\"Name\",\"Salary\"],\"properties\":{\"Emp_Id\":{\"type\":\"string\"},\"Name\":{\"type\":\"string\"},\"Salary\":{\"type\":\"number\"}},\"example\":{\"Emp_Id\":\"EMP_101\",\"Name\":\"John\",\"Salary\":500}}}}"
+                                    }
+                                },
+                                "output": {
+                                    "responseCodes": {
+                                        "type": "json",
+                                        "value": "{\"type\":\"object\",\"properties\":{\"200\":{\"type\":\"string\"},\"400\":{\"type\":\"string\"}}}",
+                                        "fe_metadata": "{\"type\":\"object\",\"properties\":{\"200\":{\"type\":\"string\"},\"400\":{\"type\":\"string\"}}}"
+                                    },
+                                    "responseCodesSchema": {
+                                        "type": "json",
+                                        "value": "{\"$schema\":\"http://json-schema.org/draft-04/schema#\",\"type\":\"array\",\"items\":{\"type\":\"object\",\"properties\":{\"code\":{\"type\":\"number\"},\"responseType\":{\"type\":\"string\"}},\"required\":[\"code\",\"responseType\"]}}",
+                                        "fe_metadata": "[{\"code\":200,\"responseType\":\"string\"},{\"code\":400,\"responseType\":\"string\"}]"
+                                    },
+                                    "headers": {
+                                        "type": "json",
+                                        "value": "{\"type\":\"object\",\"properties\":{\"Accept\":{\"type\":\"string\",\"visible\":false},\"Accept-Charset\":{\"type\":\"string\",\"visible\":false},\"Accept-Encoding\":{\"type\":\"string\",\"visible\":false},\"Content-Type\":{\"type\":\"string\",\"visible\":false},\"Content-Length\":{\"type\":\"string\",\"visible\":false},\"Connection\":{\"type\":\"string\",\"visible\":false},\"Cookie\":{\"type\":\"string\",\"visible\":false},\"Pragma\":{\"type\":\"string\",\"visible\":false}},\"required\":[]}",
+                                        "fe_metadata": "[{\"parameterName\":\"Accept\",\"type\":\"string\",\"repeating\":\"false\",\"required\":\"false\",\"visible\":false},{\"parameterName\":\"Accept-Charset\",\"type\":\"string\",\"repeating\":\"false\",\"required\":\"false\",\"visible\":false},{\"parameterName\":\"Accept-Encoding\",\"type\":\"string\",\"repeating\":\"false\",\"required\":\"false\",\"visible\":false},{\"parameterName\":\"Content-Type\",\"type\":\"string\",\"repeating\":\"false\",\"required\":\"false\",\"visible\":false},{\"parameterName\":\"Content-Length\",\"type\":\"string\",\"repeating\":\"false\",\"required\":\"false\",\"visible\":false},{\"parameterName\":\"Connection\",\"type\":\"string\",\"repeating\":\"false\",\"required\":\"false\",\"visible\":false},{\"parameterName\":\"Cookie\",\"type\":\"string\",\"repeating\":\"false\",\"required\":\"false\",\"visible\":false},{\"parameterName\":\"Pragma\",\"type\":\"string\",\"repeating\":\"false\",\"required\":\"false\",\"visible\":false}]"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "id": "Return",
+                        "name": "Return",
+                        "description": "Simple Return Activity",
+                        "activity": {
+                            "ref": "#actreturn",
+                            "settings": {
+                                "mappings": {
+                                    "data": {
+                                        "mapping": {
+                                            "msg": "=utility.renderJSON($activity[InvokeRESTService].responseCodes, false)"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                ],
+                "metadata": {
+                    "input": [
+                        {
+                            "name": "headers",
+                            "type": "object",
+                            "schema": {
+                                "type": "json",
+                                "value": "{\"Accept\":{\"type\":\"string\",\"visible\":false},\"Accept-Charset\":{\"type\":\"string\",\"visible\":false},\"Accept-Encoding\":{\"type\":\"string\",\"visible\":false},\"Content-Type\":{\"type\":\"string\",\"visible\":false},\"Content-Length\":{\"type\":\"string\",\"visible\":false},\"Connection\":{\"type\":\"string\",\"visible\":false},\"Cookie\":{\"type\":\"string\",\"visible\":false},\"Pragma\":{\"type\":\"string\",\"visible\":false}}"
+                            }
+                        }
+                    ],
+                    "output": [
+                        {
+                            "name": "code",
+                            "type": "integer"
+                        },
+                        {
+                            "name": "data",
+                            "type": "object",
+                            "schema": {
+                                "type": "json",
+                                "value": "{\"msg\":{\"type\":\"string\"}}"
+                            }
+                        }
+                    ],
+                    "fe_metadata": {
+                        "input": "{\"type\":\"object\",\"title\":\"ReceiveHTTPMessage\",\"properties\":{\"headers\":{\"type\":\"object\",\"properties\":{\"Accept\":{\"type\":\"string\",\"visible\":false},\"Accept-Charset\":{\"type\":\"string\",\"visible\":false},\"Accept-Encoding\":{\"type\":\"string\",\"visible\":false},\"Content-Type\":{\"type\":\"string\",\"visible\":false},\"Content-Length\":{\"type\":\"string\",\"visible\":false},\"Connection\":{\"type\":\"string\",\"visible\":false},\"Cookie\":{\"type\":\"string\",\"visible\":false},\"Pragma\":{\"type\":\"string\",\"visible\":false}},\"required\":[]}}}",
+                        "output": "{\"type\":\"object\",\"title\":\"Inputs\",\"properties\":{\"code\":{\"type\":\"integer\",\"required\":false},\"data\":{\"$schema\":\"http://json-schema.org/draft-04/schema#\",\"type\":\"object\",\"properties\":{\"msg\":{\"type\":\"string\"}}}},\"required\":[]}"
+                    }
+                },
+                "explicitReply": true
+            }
+        }
+    ],
+    "properties": [],
+    "connections": {},
+    "contrib": "W3sicmVmIjoiZ2l0LnRpYmNvLmNvbS9naXQvcHJvZHVjdC9pcGFhcy93aS1jb250cmliLmdpdC9jb250cmlidXRpb25zL0dlbmVyYWwiLCJzM2xvY2F0aW9uIjoiVGliY28vR2VuZXJhbCJ9XQ==",
+    "fe_metadata": "UEsDBAoAAAAIAJdBQlKrqSRGFQAAABMAAAAIAAAAYXBwLmpzb26rViopykxPTy1yy8kvL1ayio6tBQBQSwECFAAKAAAACACXQUJSq6kkRhUAAAATAAAACAAAAAAAAAAAAAAAAAAAAAAAYXBwLmpzb25QSwUGAAAAAAEAAQA2AAAAOwAAAAAA"
+}

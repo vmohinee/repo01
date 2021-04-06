@@ -1,0 +1,75 @@
+{
+	"name" : "BW_Post",
+	"version" : "1.0",
+	"type" : "ipaas",
+	"endpoints" : [
+		{
+			"name" : "Resource",
+			"protocol" : "http",
+			"port" : "8080",
+			"spec" : {
+				"name" : "BW_Post",
+				"version" : "v1"
+			},
+			"swagger" : {
+  "swagger" : "2.0",
+  "info" : {
+    "version" : "1.0",
+    "title" : "Summary about the new REST service.",
+    "description" : "Summary about the new REST service."
+  },
+  "host" : "localhost:8080",
+  "basePath" : "/",
+  "schemes" : [ "http" ],
+  "paths" : {
+    "/resource" : {
+      "post" : {
+        "summary" : "BW_post",
+        "description" : "",
+        "operationId" : "post-resource",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "body",
+          "in" : "body",
+          "description" : "",
+          "schema" : {
+            "$ref" : "#/definitions/Element"
+          },
+          "required" : true
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "a Element to be returned",
+            "schema" : {
+              "$ref" : "#/definitions/Element"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions" : {
+    "Element" : {
+      "type" : "object",
+      "required" : [ "name" ],
+      "properties" : {
+        "name" : {
+          "type" : "string"
+        },
+        "number" : {
+          "type" : "integer"
+        }
+      }
+    }
+  }
+}
+		},
+		{
+			"type" : "private",
+			"pingable" : true,
+			"protocol" : "http",
+			"port" : "7777"
+		}
+	]
+}
